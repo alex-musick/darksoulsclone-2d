@@ -6,10 +6,10 @@
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
-            "program": "/Applications/Godot_mono.app/Contents/MacOS/Godot",
+            "program": "C:/Users/justi/OneDrive/Desktop/Godot_v4.4-stable_mono_win64/Godot_v4.4-stable_mono_win64/Godot_v4.4-stable_mono_win64.exe",
             "args": [],
             "stopAtEntry": false,
-            "cwd": "${workspaceFolder}",
+            "cwd": "${res://}",
             "console": "internalConsole",
             "internalConsoleOptions": "openOnSessionStart"
         },
