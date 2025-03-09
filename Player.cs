@@ -14,7 +14,25 @@ public partial class Player : Area2D
     }
     public override void _Process(double delta)
     {
-        var velocity = Vector2.Zero; // The player's movement vector.
+        movePlayer(delta);
+
+        if (Input.IsActionPressed("Attack"))
+        {
+            attack();
+        }
+    }
+    public void attack(){
+        var animatedSprite2D = GetNode<AnimatedSprite2D>("AnimatedSprite2D");
+        
+        if (!animatedSprite2D.IsPlaying()) {
+            animatedSprite2D.Animation = "attack";
+            animatedSprite2D.Play();
+        }
+    }
+    //delta is time passed on screen
+    public void movePlayer(double delta) 
+    {
+        var velocity = Vector2.Zero; 
 
         if (Input.IsActionPressed("move_right"))
         {
@@ -36,7 +54,7 @@ public partial class Player : Area2D
             velocity.Y -= 1;
         }
 
-        var animatedSprite2D = GetNode<AnimatedSprite2D>("AnimatedSprite2D");
+        var animatedSprite2D = GetNode<AnimatedSprite2D>("walkAnimation");
 
         if (velocity.Length() > 0)
         {
@@ -56,7 +74,6 @@ public partial class Player : Area2D
         {
             animatedSprite2D.Animation = "walk";
             animatedSprite2D.FlipV = false;
-            // See the note below about the following boolean assignment.
             animatedSprite2D.FlipH = velocity.X < 0;
         }
         else if (velocity.Y != 0)
