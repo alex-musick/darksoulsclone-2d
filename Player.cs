@@ -1,7 +1,7 @@
 using Godot;
 using System;
 
-public partial class Player : Area2D
+public partial class Player : CharacterBody2D
 {
     [Export]
     public int Speed { get; set; } = 400; // How fast the player will move (pixels/sec).
@@ -65,7 +65,9 @@ public partial class Player : Area2D
         {
             animatedSprite2D.Stop();
         }
-        Position += velocity * (float)delta;
+        // Position += velocity * (float)delta;
+        Velocity = velocity;
+        MoveAndSlide();
         Position = new Vector2(
             x: Mathf.Clamp(Position.X, 0, ScreenSize.X),
             y: Mathf.Clamp(Position.Y, 0, ScreenSize.Y)
