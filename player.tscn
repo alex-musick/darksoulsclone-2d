@@ -53,7 +53,8 @@ metadata/_edit_group_ = true
 [node name="walkAnimation" type="AnimatedSprite2D" parent="."]
 scale = Vector2(0.5, 0.5)
 sprite_frames = SubResource("SpriteFrames_sh265")
-animation = &"up"
+animation = &"walk"
+frame_progress = 0.747778
 
 [node name="playerCollision" type="CollisionShape2D" parent="."]
 shape = SubResource("CapsuleShape2D_dw050")
