@@ -22,12 +22,9 @@ public partial class Player : CharacterBody2D
         }
     }
     public void attack(){
-        var animatedSprite2D = GetNode<AnimatedSprite2D>("AnimatedSprite2D");
+        var aniPlayer = GetNode<AnimationPlayer>("attackAnimation");
         
-        if (!animatedSprite2D.IsPlaying()) {
-            animatedSprite2D.Animation = "attack";
-            animatedSprite2D.Play();
-        }
+            aniPlayer.Play("attackRight");
     }
     //delta is time passed on screen
     public void movePlayer(double delta) 
