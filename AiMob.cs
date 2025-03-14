@@ -3,28 +3,37 @@ using System;
 
 public partial class AiMob : CharacterBody2D
 {
-    [Export] public float Speed = 100f;
-    [Export] public float DetectionRange = 200f; // How close the player must be to be detected
-    [Export] public float PatrolTime = 2f; // Time before switching patrol direction
+    [Export] public float Speed = 75f;
+    [Export] public float DetectionRange = 200f;
+    [Export] public float PatrolTime = 2f;
 
     private Node2D player;
     private NavigationAgent2D navAgent;
     private AnimationPlayer animationPlayer;
     private RayCast2D visionRay;
-    private Vector2 patrolDirection;
     private float patrolTimer;
     private string currentAnimation = "";
+    private RayCast2D wallRay;
+    private Area2D detectionArea;
+    private Vector2 targetPatrolDirection;
+    private Vector2 patrolDirection;
+    private Random random;
 
     public override void _Ready()
     {
+        random = new Random();
         navAgent = GetNode<NavigationAgent2D>("NavAgent2D");
         animationPlayer = GetNode<AnimationPlayer>("AnimationPlayer");
-        visionRay = GetNode<RayCast2D>("VisionRay"); // This will check if AI can see the player
+        visionRay = GetNode<RayCast2D>("VisionRay");
+        player = GetNode<Node2D>("/root/TestRoom/Player");
+        wallRay = GetNode<RayCast2D>("WallRay");
+        detectionArea = GetNode<Area2D>("DetectionArea");
 
-        player = GetNode<Node2D>("/root/MainScene/Player");
-
+        detectionArea.Connect("body_entered", Callable.From((Node body) => OnPlayerEntered(body)));
+        detectionArea.Connect("body_exited", Callable.From((Node body) => OnPlayerExited(body)));
         patrolTimer = PatrolTime;
         ChooseNewPatrolDirection();
+
     }
 
     public override void _PhysicsProcess(double delta)
@@ -46,15 +55,31 @@ public partial class AiMob : CharacterBody2D
         );
     }
 
+    private void OnPlayerEntered(Node body)
+    {
+        if (body == player)
+        {
+            player = body as Node2D;
+        }
+    }
+
+    private void OnPlayerExited(Node body)
+    {
+        if (body == player)
+        {
+            player = null;
+        }
+    }
+
     private bool CanSeePlayer()
     {
         if (player == null) return false;
         if (GlobalPosition.DistanceTo(player.GlobalPosition) > DetectionRange) return false;
 
         visionRay.TargetPosition = ToLocal(player.GlobalPosition);
-        visionRay.ForceRaycastUpdate(); // Make sure raycast updates every frame
+        visionRay.ForceRaycastUpdate();
 
-        return !visionRay.IsColliding(); // If no obstacle, AI can see the player
+        return !visionRay.IsColliding();
     }
 
     private void ChasePlayer()
@@ -72,9 +97,30 @@ public partial class AiMob : CharacterBody2D
 
     private void Patrol(float delta)
     {
+        GD.Print("Patrol method running"); // Debug statement
+
+        if (wallRay == null)
+        {
+            GD.Print("wallRay is null!");
+            return;
+        }
+
+        if (animationPlayer == null)
+        {
+            GD.Print("animationPlayer is null!");
+            return;
+        }
+
         patrolTimer -= delta;
 
-        if (patrolTimer <= 0)
+        // Smoothly transition to the new patrol direction
+        patrolDirection = patrolDirection.Lerp(targetPatrolDirection, 0.1f);
+
+        // Check for wall collision
+        wallRay.TargetPosition = patrolDirection * 50;
+        wallRay.ForceRaycastUpdate();
+
+        if (patrolTimer <= 0 || wallRay.IsColliding())
         {
             ChooseNewPatrolDirection();
         }
@@ -86,15 +132,14 @@ public partial class AiMob : CharacterBody2D
 
     private void ChooseNewPatrolDirection()
     {
-        Random random = new Random();
         int randomDirection = random.Next(4);
 
         switch (randomDirection)
         {
-            case 0: patrolDirection = Vector2.Up; break;
-            case 1: patrolDirection = Vector2.Down; break;
-            case 2: patrolDirection = Vector2.Left; break;
-            case 3: patrolDirection = Vector2.Right; break;
+            case 0: targetPatrolDirection = Vector2.Up; break;
+            case 1: targetPatrolDirection = Vector2.Down; break;
+            case 2: targetPatrolDirection = Vector2.Left; break;
+            case 3: targetPatrolDirection = Vector2.Right; break;
         }
 
         patrolTimer = PatrolTime;
