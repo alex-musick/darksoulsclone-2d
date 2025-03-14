@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bgup31bhfkc7x"
-path="res://.godot/imported/playerGrey_walk1.png-c4773fe7a7bf85d7ab732eb4458c2742.ctex"
+uid="uid://cfmrqydjwv17e"
+path="res://.godot/imported/swordSelection.png-13dc5b856c7817bbb9e568721f49f171.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://art/playerGrey_walk1.png"
-dest_files=["res://.godot/imported/playerGrey_walk1.png-c4773fe7a7bf85d7ab732eb4458c2742.ctex"]
+source_file="res://art/swordSelection.png"
+dest_files=["res://.godot/imported/swordSelection.png-13dc5b856c7817bbb9e568721f49f171.ctex"]
 
 [params]
 
