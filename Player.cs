@@ -4,7 +4,7 @@ using System;
 public partial class Player : CharacterBody2D
 {
     [Export]
-    public int Speed { get; set; } = 400; // How fast the player will move (pixels/sec).
+    public int Speed { get; set; } = 75; // How fast the player will move (pixels/sec).
     public int damage {get; private set;} = 1;
     private int health = 5;
     public enum FacingDirection 
