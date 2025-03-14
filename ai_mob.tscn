@@ -98,8 +98,9 @@ _data = {
 [sub_resource type="CircleShape2D" id="CircleShape2D_6l3xq"]
 radius = 56.0357
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_0s1ad"]
-size = Vector2(86, 112)
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_0s1ad"]
+radius = 36.0
+height = 104.0
 
 [node name="Node" type="CharacterBody2D"]
 script = ExtResource("1_0s1ad")
@@ -118,11 +119,18 @@ libraries = {
 }
 speed_scale = 0.6
 
-[node name="Area2D" type="Area2D" parent="."]
+[node name="DetectionArea" type="Area2D" parent="."]
+collision_mask = 2
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="DetectionArea"]
 shape = SubResource("CircleShape2D_6l3xq")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2(1, 0)
-shape = SubResource("RectangleShape2D_0s1ad")
+shape = SubResource("CapsuleShape2D_0s1ad")
+
+[node name="WallRay" type="RayCast2D" parent="."]
+
+[node name="NavAgent2D" type="NavigationAgent2D" parent="."]
+
+[node name="VisionRay" type="RayCast2D" parent="."]

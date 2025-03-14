@@ -27,9 +27,8 @@ _data = {
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_u1c27"]
 size = Vector2(31, 46)
 
-[sub_resource type="Animation" id="Animation_i3pqv"]
-resource_name = "walkRight"
-length = 1.2
+[sub_resource type="Animation" id="Animation_b26j0"]
+length = 0.001
 tracks/0/type = "value"
 tracks/0/imported = false
 tracks/0/enabled = true
@@ -37,10 +36,10 @@ tracks/0/path = NodePath("Sprite2D:frame")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/keys = {
-"times": PackedFloat32Array(0, 0.3, 0.6, 0.9),
-"transitions": PackedFloat32Array(1, 1, 1, 1),
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
 "update": 1,
-"values": [78, 79, 80, 79]
+"values": [66]
 }
 tracks/1/type = "value"
 tracks/1/imported = false
@@ -49,14 +48,14 @@ tracks/1/path = NodePath(".:facingDirection")
 tracks/1/interp = 1
 tracks/1/loop_wrap = true
 tracks/1/keys = {
-"times": PackedFloat32Array(0, 1.2),
-"transitions": PackedFloat32Array(1, 1),
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
 "update": 1,
-"values": [3, 3]
+"values": [2]
 }
 
-[sub_resource type="Animation" id="Animation_hqtel"]
-resource_name = "walkLeft"
+[sub_resource type="Animation" id="Animation_2hs0m"]
+resource_name = "down"
 length = 1.2
 tracks/0/type = "value"
 tracks/0/imported = false
@@ -68,7 +67,7 @@ tracks/0/keys = {
 "times": PackedFloat32Array(0, 0.3, 0.6, 0.9),
 "transitions": PackedFloat32Array(1, 1, 1, 1),
 "update": 1,
-"values": [66, 67, 68, 67]
+"values": [54, 55, 56, 55]
 }
 tracks/1/type = "value"
 tracks/1/imported = false
@@ -80,7 +79,7 @@ tracks/1/keys = {
 "times": PackedFloat32Array(0, 1.2),
 "transitions": PackedFloat32Array(1, 1),
 "update": 1,
-"values": [2, 2]
+"values": [1, 1]
 }
 
 [sub_resource type="Animation" id="Animation_sweqy"]
@@ -112,8 +111,8 @@ tracks/1/keys = {
 "values": [0, 0]
 }
 
-[sub_resource type="Animation" id="Animation_2hs0m"]
-resource_name = "down"
+[sub_resource type="Animation" id="Animation_hqtel"]
+resource_name = "walkLeft"
 length = 1.2
 tracks/0/type = "value"
 tracks/0/imported = false
@@ -125,7 +124,7 @@ tracks/0/keys = {
 "times": PackedFloat32Array(0, 0.3, 0.6, 0.9),
 "transitions": PackedFloat32Array(1, 1, 1, 1),
 "update": 1,
-"values": [54, 55, 56, 55]
+"values": [66, 67, 68, 67]
 }
 tracks/1/type = "value"
 tracks/1/imported = false
@@ -137,11 +136,12 @@ tracks/1/keys = {
 "times": PackedFloat32Array(0, 1.2),
 "transitions": PackedFloat32Array(1, 1),
 "update": 1,
-"values": [1, 1]
+"values": [2, 2]
 }
 
-[sub_resource type="Animation" id="Animation_b26j0"]
-length = 0.001
+[sub_resource type="Animation" id="Animation_i3pqv"]
+resource_name = "walkRight"
+length = 1.2
 tracks/0/type = "value"
 tracks/0/imported = false
 tracks/0/enabled = true
@@ -149,10 +149,10 @@ tracks/0/path = NodePath("Sprite2D:frame")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
+"times": PackedFloat32Array(0, 0.3, 0.6, 0.9),
+"transitions": PackedFloat32Array(1, 1, 1, 1),
 "update": 1,
-"values": [66]
+"values": [78, 79, 80, 79]
 }
 tracks/1/type = "value"
 tracks/1/imported = false
@@ -161,10 +161,10 @@ tracks/1/path = NodePath(".:facingDirection")
 tracks/1/interp = 1
 tracks/1/loop_wrap = true
 tracks/1/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
+"times": PackedFloat32Array(0, 1.2),
+"transitions": PackedFloat32Array(1, 1),
 "update": 1,
-"values": [2]
+"values": [3, 3]
 }
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_n7ghd"]
