@@ -1,13 +1,14 @@
 using Godot;
 using System;
+using System.Collections.Generic;
 
 public partial class Player : CharacterBody2D
 {
     [Export]
     public int Speed { get; set; } = 75; // How fast the player will move (pixels/sec).
-    public int damage {get; private set;} = 1;
+    public int damage { get; private set; } = 1;
     private int health = 5;
-    public enum FacingDirection 
+    public enum FacingDirection
     {
         up, down, left, right
     }
@@ -22,29 +23,58 @@ public partial class Player : CharacterBody2D
         ScreenSize = GetViewportRect().Size;
         instance = this;
     }
-    public void attack(string attackName){
+    public void attack(string attackName)
+    {
         var aniPlayer = GetNode<AnimationPlayer>("attackAnimation");
-        
-            aniPlayer.Play(attackName);
+
+        aniPlayer.Play(attackName);
     }
-    private void _on_hit_box_area_entered(Area2D col) {
+    private void _on_hit_box_area_entered(Area2D col)
+    {
         GD.Print("damage taken");
+        health--;
     }
-    public void hideSprite(string spriteName) {
+    public void hideSprite(string spriteName)
+    {
         GetNode<Sprite2D>(spriteName).Visible = false;
-            }
-    public void showSprite (string spriteName) {
+    }
+    public void showSprite(string spriteName)
+    {
         GetNode<Sprite2D>(spriteName).Visible = true;
     }
+    public void hideAndShowAni(string spriteSelected)
+    {
+        List<string> animations = new List<string> {"SprPlayerUpWalk", "SprPlayerDownWalk", "SprPlayerLeftWalk", "SprPlayerRightWalk",
+        "SprPlayerUpAttack", "SprPlayerDownAttack", "SprPlayerLeftAttack", "SprPlayerRightAttack",
+        "SprPlayerUpIdle", "SprPlayerDownIdle", "SprPlayerLeftIdle", "SprPlayerRightIdle"};
+        foreach (string name in animations)
+        {
+            if (name == spriteSelected)
+            {
+                showSprite(name);
+            }
+            else
+            {
+                hideSprite(name);
+            }
+        }
+    }
     // delta is time passed on screen
-    public void dodgeAttack(string dodgeName) {
+    public void dodgeAttack(string dodgeName)
+    {
         var aniPlayer = GetNode<AnimationPlayer>("dodgeAnimation");
 
         aniPlayer.Play(dodgeName);
     }
-    public void physicsPlayer(double delta) 
+    public void idlePlayer(string idleName)
     {
-        Vector2 velocity = Vector2.Zero; 
+        var aniPlayer = GetNode<AnimationPlayer>("idleAnimation");
+
+        aniPlayer.Play(idleName);
+    }
+    public void physicsPlayer(double delta)
+    {
+        Vector2 velocity = Vector2.Zero;
         Vector2 direction = Input.GetVector("move_left", "move_right", "move_up", "move_down");
         // Sprite2D walkUpSprite = GetNode<Sprite2D>(SprPlayerUpWalk);
         var aniPlayerMoving = GetNode<AnimationPlayer>("walkAnimation");
@@ -54,56 +84,25 @@ public partial class Player : CharacterBody2D
             if (facingDirection == FacingDirection.up)
             {
                 attack("attackUp");
-                hideSprite("SprPlayerDownWalk");
-                hideSprite("SprPlayerUpWalk");
-                hideSprite("SprPlayerLeftWalk");
-                hideSprite("SprPlayerRightWalk");
-                hideSprite("SprPlayerLeftAttack");
-                hideSprite("SprPlayerRightAttack");
-                hideSprite("SprPlayerDownAttack");
-                showSprite("SprPlayerUpAttack");
+                hideAndShowAni("SprPlayerUpAttack");
                 isAttacking = false;
-                
             }
-            if (facingDirection == FacingDirection.down)
+            else if (facingDirection == FacingDirection.down)
             {
                 attack("attackDown");
-                hideSprite("SprPlayerDownWalk");
-                hideSprite("SprPlayerUpWalk");
-                hideSprite("SprPlayerLeftWalk");
-                hideSprite("SprPlayerRightWalk");
-                hideSprite("SprPlayerLeftAttack");
-                hideSprite("SprPlayerRightAttack");
-                showSprite("SprPlayerDownAttack");
-                hideSprite("SprPlayerUpAttack");
+                hideAndShowAni("SprPlayerDownAttack");
                 isAttacking = false;
-                
-
             }
-            if (facingDirection == FacingDirection.left)
+            else if (facingDirection == FacingDirection.left)
             {
                 attack("attackLeft");
-                hideSprite("SprPlayerDownWalk");
-                hideSprite("SprPlayerUpWalk");
-                hideSprite("SprPlayerLeftWalk");
-                hideSprite("SprPlayerRightWalk");
-                showSprite("SprPlayerLeftAttack");
-                hideSprite("SprPlayerRightAttack");
-                hideSprite("SprPlayerDownAttack");
-                hideSprite("SprPlayerUpAttack");
+                hideAndShowAni("SprPlayerLeftAttack");
                 isAttacking = false;
             }
-            if (facingDirection == FacingDirection.right)
+            else if (facingDirection == FacingDirection.right)
             {
                 attack("attackRight");
-                hideSprite("SprPlayerDownWalk");
-                hideSprite("SprPlayerUpWalk");
-                hideSprite("SprPlayerLeftWalk");
-                hideSprite("SprPlayerRightWalk");
-                hideSprite("SprPlayerLeftAttack");
-                showSprite("SprPlayerRightAttack");
-                hideSprite("SprPlayerDownAttack");
-                hideSprite("SprPlayerUpAttack");
+                hideAndShowAni("SprPlayerRightAttack");
                 isAttacking = false;
             }
         }
@@ -112,68 +111,64 @@ public partial class Player : CharacterBody2D
             if (direction.X > 0)
             {
                 aniPlayerMoving.Play("walkRight");
-                hideSprite("SprPlayerDownWalk");
-                hideSprite("SprPlayerUpWalk");
-                hideSprite("SprPlayerLeftWalk");
-                showSprite("SprPlayerRightWalk");
-                hideSprite("SprPlayerLeftAttack");
-                hideSprite("SprPlayerRightAttack");
-                hideSprite("SprPlayerDownAttack");
-                hideSprite("SprPlayerUpAttack");
+                hideAndShowAni("SprPlayerRightWalk");
             }
             else if (direction.X < 0)
             {
                 aniPlayerMoving.Play("walkLeft");
-                hideSprite("SprPlayerDownWalk");
-                hideSprite("SprPlayerUpWalk");
-                showSprite("SprPlayerLeftWalk");
-                hideSprite("SprPlayerRightWalk");
-                hideSprite("SprPlayerLeftAttack");
-                hideSprite("SprPlayerRightAttack");
-                hideSprite("SprPlayerDownAttack");
-                hideSprite("SprPlayerUpAttack");
+                hideAndShowAni("SprPlayerLeftWalk");
 
             }
             else if (direction.Y > 0)
             {
                 aniPlayerMoving.Play("down");
-                hideSprite("SprPlayerDownWalk");
-                hideSprite("SprPlayerUpWalk");
-                hideSprite("SprPlayerLeftWalk");
-                hideSprite("SprPlayerRightWalk");
-                hideSprite("SprPlayerLeftAttack");
-                hideSprite("SprPlayerRightAttack");
-                showSprite("SprPlayerDownAttack");
-                hideSprite("SprPlayerUpAttack");
-                
+                hideAndShowAni("SprPlayerDownWalk");
+
             }
             else if (direction.Y < 0)
             {
                 aniPlayerMoving.Play("up");
-                hideSprite("SprPlayerDownWalk");
-                hideSprite("SprPlayerUpWalk");
-                hideSprite("SprPlayerLeftWalk");
-                hideSprite("SprPlayerRightWalk");
-                hideSprite("SprPlayerLeftAttack");
-                hideSprite("SprPlayerRightAttack");
-                hideSprite("SprPlayerDownAttack");
-                showSprite("SprPlayerUpAttack");
+                hideAndShowAni("SprPlayerUpWalk");
 
             }
             velocity = direction.Normalized() * Speed;
-        } else if (!isAttacking)
+        }
+        else if (Velocity == Vector2.Zero && !isAttacking)
+        {
+            if (facingDirection == FacingDirection.up)
+            {
+                idlePlayer("idleUp");
+                hideAndShowAni("SprPlayerUpIdle");
+            }
+            if (facingDirection == FacingDirection.down)
+            {
+                idlePlayer("idleDown");
+                hideAndShowAni("SprPlayerDownIdle");
+            }
+            if (facingDirection == FacingDirection.left)
+            {
+                idlePlayer("idleLeft");
+                hideAndShowAni("SprPlayerLeftIdle");
+            }
+            if (facingDirection == FacingDirection.right)
+            {
+                idlePlayer("idleRight");
+                hideAndShowAni("SprPlayerRightIdle");
+            }
+        }
+        else if (!isAttacking)
         {
             aniPlayerMoving.Pause();
         }
         Velocity = velocity;
         MoveAndSlide();
     }
-    
+
     public override void _Process(double delta)
     {
         physicsPlayer(delta);
-    
+
     }
 
-    
+
 }
