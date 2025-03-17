@@ -156,7 +156,6 @@ public partial class Player : CharacterBody2D
         {
             aniPlayerMoving.Pause();
         }
-        
         Velocity = velocity;
         MoveAndSlide();
     }
@@ -164,7 +163,6 @@ public partial class Player : CharacterBody2D
     public override void _Process(double delta)
     {
         physicsPlayer(delta);
-
     }
 
 
