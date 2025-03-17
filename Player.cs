@@ -85,25 +85,21 @@ public partial class Player : CharacterBody2D
             {
                 attack("attackUp");
                 hideAndShowAni("SprPlayerUpAttack");
-                isAttacking = false;
             }
             else if (facingDirection == FacingDirection.down)
             {
                 attack("attackDown");
                 hideAndShowAni("SprPlayerDownAttack");
-                isAttacking = false;
             }
             else if (facingDirection == FacingDirection.left)
             {
                 attack("attackLeft");
                 hideAndShowAni("SprPlayerLeftAttack");
-                isAttacking = false;
             }
             else if (facingDirection == FacingDirection.right)
             {
                 attack("attackRight");
                 hideAndShowAni("SprPlayerRightAttack");
-                isAttacking = false;
             }
         }
         else if (direction != Vector2.Zero)
@@ -133,24 +129,24 @@ public partial class Player : CharacterBody2D
             }
             velocity = direction.Normalized() * Speed;
         }
-        else if (Velocity == Vector2.Zero && !isAttacking)
+        else if (velocity == Vector2.Zero && !isAttacking)
         {
             if (facingDirection == FacingDirection.up)
             {
                 idlePlayer("idleUp");
                 hideAndShowAni("SprPlayerUpIdle");
             }
-            if (facingDirection == FacingDirection.down)
+            else if (facingDirection == FacingDirection.down)
             {
                 idlePlayer("idleDown");
                 hideAndShowAni("SprPlayerDownIdle");
             }
-            if (facingDirection == FacingDirection.left)
+            else if (facingDirection == FacingDirection.left)
             {
                 idlePlayer("idleLeft");
                 hideAndShowAni("SprPlayerLeftIdle");
             }
-            if (facingDirection == FacingDirection.right)
+            else if (facingDirection == FacingDirection.right)
             {
                 idlePlayer("idleRight");
                 hideAndShowAni("SprPlayerRightIdle");
@@ -160,6 +156,7 @@ public partial class Player : CharacterBody2D
         {
             aniPlayerMoving.Pause();
         }
+        
         Velocity = velocity;
         MoveAndSlide();
     }
