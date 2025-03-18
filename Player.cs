@@ -162,7 +162,7 @@ public partial class Player : CharacterBody2D
             }
             velocity = direction.Normalized() * dodgeSpeed;
         }
-        else if (velocity == Vector2.Zero && !isAttacking)
+        else if (velocity == Vector2.Zero && !isAttacking && !isDodging)
         {   
             GD.Print(isDodging);
             if (facingDirection == FacingDirection.up)
@@ -186,7 +186,7 @@ public partial class Player : CharacterBody2D
                 hideAndShowAni("SprPlayerRightIdle");
             }
         }
-        else if (!isAttacking)
+        else if (!isAttacking && !isDodging)
         {
             aniPlayerMoving.Pause();
         }
