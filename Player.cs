@@ -1,11 +1,13 @@
 using Godot;
 using System;
 using System.Collections.Generic;
+using System.Dynamic;
 
 public partial class Player : CharacterBody2D
 {
     [Export]
     public int Speed { get; set; } = 75; // How fast the player will move (pixels/sec).
+    public int dodgeSpeed { get; set; } = 100;
     public int damage { get; private set; } = 1;
     private int health = 5;
     private int stamina = 5;
@@ -15,6 +17,7 @@ public partial class Player : CharacterBody2D
     }
     [Export] public FacingDirection facingDirection = new();
     [Export] public bool isAttacking = false;
+    [Export] public bool isDodging = false;
     public static Player instance;
 
     public Vector2 ScreenSize;
@@ -47,7 +50,8 @@ public partial class Player : CharacterBody2D
     {
         List<string> animations = new List<string> {"SprPlayerUpWalk", "SprPlayerDownWalk", "SprPlayerLeftWalk", "SprPlayerRightWalk",
         "SprPlayerUpAttack", "SprPlayerDownAttack", "SprPlayerLeftAttack", "SprPlayerRightAttack",
-        "SprPlayerUpIdle", "SprPlayerDownIdle", "SprPlayerLeftIdle", "SprPlayerRightIdle"};
+        "SprPlayerUpIdle", "SprPlayerDownIdle", "SprPlayerLeftIdle", "SprPlayerRightIdle",
+        "SprPlayerUpDodgeroll", "SprPlayerDownDodgeroll", "SprPlayerLeftDodgeroll", "SprPlayerRightDodgeroll"};
         foreach (string name in animations)
         {
             if (name == spriteSelected)
@@ -79,6 +83,7 @@ public partial class Player : CharacterBody2D
         Vector2 direction = Input.GetVector("move_left", "move_right", "move_up", "move_down");
         // Sprite2D walkUpSprite = GetNode<Sprite2D>(SprPlayerUpWalk);
         var aniPlayerMoving = GetNode<AnimationPlayer>("walkAnimation");
+        
         if (Input.IsActionJustPressed("Attack"))
         {
             isAttacking = true;
@@ -126,12 +131,40 @@ public partial class Player : CharacterBody2D
             {
                 aniPlayerMoving.Play("up");
                 hideAndShowAni("SprPlayerUpWalk");
-
             }
             velocity = direction.Normalized() * Speed;
         }
-        else if (velocity == Vector2.Zero && !isAttacking)
+        else if (Input.IsActionJustPressed("Dodge"))
         {
+            GD.Print(isDodging);
+            isDodging = true;
+            GD.Print(isDodging);
+
+            if (facingDirection == FacingDirection.right)
+            {
+                dodgeAttack("rightDodge");
+                hideAndShowAni("SprPlayerRightDodgeroll");
+            }
+            else if (facingDirection == FacingDirection.left)
+            {
+                dodgeAttack("leftDodge");
+                hideAndShowAni("SprPlayerLeftDodgeroll");
+            }
+            else if (facingDirection == FacingDirection.down)
+            {
+                dodgeAttack("downDodge");
+                hideAndShowAni("SprPlayerDownDodgeroll");
+            }
+            else if (facingDirection == FacingDirection.up)
+            {
+                dodgeAttack("upDodge");
+                hideAndShowAni("SprPlayerUpDodgeroll");
+            }
+            velocity = direction.Normalized() * dodgeSpeed;
+        }
+        else if (velocity == Vector2.Zero && !isAttacking)
+        {   
+            GD.Print(isDodging);
             if (facingDirection == FacingDirection.up)
             {
                 idlePlayer("idleUp");
