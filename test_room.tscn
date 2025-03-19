@@ -27,4 +27,4 @@ position = Vector2(584, 320)
 motion_mode = 1
 
 [node name="Node" parent="." instance=ExtResource("4_ju58f")]
-position = Vector2(278, 187)
+position = Vector2(799, 306)

@@ -12,54 +12,79 @@ public partial class AiMob : CharacterBody2D
     private AnimationPlayer animationPlayer;
     private RayCast2D visionRay;
     private float patrolTimer;
-    private string currentAnimation = "";
     private RayCast2D wallRay;
     private Area2D detectionArea;
     private Vector2 targetPatrolDirection;
     private Vector2 patrolDirection;
-    private Random random;
+    private static readonly Random random = new Random();
+    private enum AiAnimation { Idle, Up, Down, Left, Right }
+    private AiAnimation currentAnimation;
+    private Sprite2D walkSprite;
+    private Sprite2D attackSprite;
+    private AnimationPlayer walkAnimationPlayer;
+    private AnimationPlayer attackAnimationPlayer;
 
     public override void _Ready()
     {
-        random = new Random();
         navAgent = GetNode<NavigationAgent2D>("NavAgent2D");
-        animationPlayer = GetNode<AnimationPlayer>("AnimationPlayer");
         visionRay = GetNode<RayCast2D>("VisionRay");
-        player = GetNode<Node2D>("/root/TestRoom/Player");
+        player = GetNodeOrNull<Node2D>("/root/TestRoom/Player");
         wallRay = GetNode<RayCast2D>("WallRay");
         detectionArea = GetNode<Area2D>("DetectionArea");
+
+        walkSprite = GetNodeOrNull<Sprite2D>("WalkSprite2D");
+        attackSprite = GetNodeOrNull<Sprite2D>("AttackSprite2D");
+
+        if (walkSprite != null)
+            walkAnimationPlayer = walkSprite.GetNodeOrNull<AnimationPlayer>("AnimationPlayer");
+
+        if (attackSprite != null)
+            attackAnimationPlayer = attackSprite.GetNodeOrNull<AnimationPlayer>("AnimationPlayer");
+
+        if (walkSprite == null || attackSprite == null || walkAnimationPlayer == null || attackAnimationPlayer == null)
+        {
+            GD.PrintErr("Error: Missing required nodes in AiMob.");
+            return;
+        }
+
+        walkSprite.Visible = true;
+        attackSprite.Visible = false;
 
         detectionArea.Connect("body_entered", Callable.From((Node body) => OnPlayerEntered(body)));
         detectionArea.Connect("body_exited", Callable.From((Node body) => OnPlayerExited(body)));
         patrolTimer = PatrolTime;
         ChooseNewPatrolDirection();
-
     }
 
     public override void _PhysicsProcess(double delta)
     {
         if (player != null && CanSeePlayer())
         {
-            ChasePlayer();
+            // Trigger attack if the player is within a certain range (e.g., 50 units)
+            if (GlobalPosition.DistanceTo(player.GlobalPosition) < 50f)
+            {
+                // Trigger attack animation
+                UpdateAnimation(Vector2.Zero, true); // You can customize direction if needed
+            }
+            else
+            {
+                // Chase the player if it's not within attack range
+                ChasePlayer();
+            }
         }
         else
         {
             Patrol((float)delta);
         }
 
-        // Keep AI within screen bounds
-        Vector2 screenSize = GetViewportRect().Size;
-        GlobalPosition = new Vector2(
-            Mathf.Clamp(GlobalPosition.X, 0, screenSize.X),
-            Mathf.Clamp(GlobalPosition.Y, 0, screenSize.Y)
-        );
+        KeepWithinBounds();
     }
 
     private void OnPlayerEntered(Node body)
     {
-        if (body == player)
+        if (body is Node2D detectedPlayer)
         {
-            player = body as Node2D;
+            player = detectedPlayer;
         }
     }
 
@@ -76,7 +101,8 @@ public partial class AiMob : CharacterBody2D
         if (player == null) return false;
         if (GlobalPosition.DistanceTo(player.GlobalPosition) > DetectionRange) return false;
 
-        visionRay.TargetPosition = ToLocal(player.GlobalPosition);
+        visionRay.GlobalPosition = GlobalPosition;
+        visionRay.TargetPosition = ToLocal(player.GlobalPosition).Normalized() * DetectionRange;
         visionRay.ForceRaycastUpdate();
 
         return !visionRay.IsColliding();
@@ -86,37 +112,15 @@ public partial class AiMob : CharacterBody2D
     {
         navAgent.TargetPosition = player.GlobalPosition;
         Vector2 direction = (navAgent.GetNextPathPosition() - GlobalPosition).Normalized();
-
-        if (direction != Vector2.Zero)
-        {
-            Velocity = direction * Speed;
-            MoveAndSlide();
-            UpdateAnimation(direction);
-        }
+        MoveAI(direction);
     }
 
     private void Patrol(float delta)
     {
-        GD.Print("Patrol method running"); // Debug statement
-
-        if (wallRay == null)
-        {
-            GD.Print("wallRay is null!");
-            return;
-        }
-
-        if (animationPlayer == null)
-        {
-            GD.Print("animationPlayer is null!");
-            return;
-        }
-
         patrolTimer -= delta;
 
-        // Smoothly transition to the new patrol direction
-        patrolDirection = patrolDirection.Lerp(targetPatrolDirection, 0.1f);
+        patrolDirection = patrolDirection.Lerp(targetPatrolDirection, 0.2f);
 
-        // Check for wall collision
         wallRay.TargetPosition = patrolDirection * 50;
         wallRay.ForceRaycastUpdate();
 
@@ -125,43 +129,89 @@ public partial class AiMob : CharacterBody2D
             ChooseNewPatrolDirection();
         }
 
-        Velocity = patrolDirection * Speed;
-        MoveAndSlide();
-        UpdateAnimation(patrolDirection);
+        MoveAI(patrolDirection);
     }
 
     private void ChooseNewPatrolDirection()
     {
-        int randomDirection = random.Next(4);
+        int randomDirection = random.Next(4); // 0 = left, 1 = right, 2 = up, 3 = down
 
         switch (randomDirection)
         {
-            case 0: targetPatrolDirection = Vector2.Up; break;
-            case 1: targetPatrolDirection = Vector2.Down; break;
-            case 2: targetPatrolDirection = Vector2.Left; break;
-            case 3: targetPatrolDirection = Vector2.Right; break;
+            case 0: targetPatrolDirection = Vector2.Left; break;
+            case 1: targetPatrolDirection = Vector2.Right; break;
+            case 2: targetPatrolDirection = Vector2.Up; break;
+            case 3: targetPatrolDirection = Vector2.Down; break;
         }
 
+        patrolDirection = targetPatrolDirection;
         patrolTimer = PatrolTime;
     }
 
-    private void UpdateAnimation(Vector2 direction)
+    private void UpdateAnimation(Vector2 direction, bool isAttacking = false)
     {
-        string newAnimation = currentAnimation;
-
-        if (direction.Y < 0)
-            newAnimation = "ai_up";
-        else if (direction.Y > 0)
-            newAnimation = "ai_down";
-        else if (direction.X > 0)
-            newAnimation = "ai_right";
-        else if (direction.X < 0)
-            newAnimation = "ai_left";
-
-        if (newAnimation != currentAnimation)
+        if (walkSprite == null || attackSprite == null || walkAnimationPlayer == null || attackAnimationPlayer == null)
         {
-            currentAnimation = newAnimation;
-            animationPlayer.Play(currentAnimation);
+            GD.PrintErr("UpdateAnimation: Sprite or AnimationPlayer is null.");
+            return;
         }
+
+        AiAnimation newAnimation = currentAnimation;
+
+        if (isAttacking)
+        {
+            walkSprite.Visible = false;
+            attackSprite.Visible = true;
+            walkAnimationPlayer.Stop(); // Stop any ongoing walk animation
+
+            if (direction.Y < 0) newAnimation = AiAnimation.Up;
+            else if (direction.Y > 0) newAnimation = AiAnimation.Down;
+            else if (direction.X > 0) newAnimation = AiAnimation.Right;
+            else if (direction.X < 0) newAnimation = AiAnimation.Left;
+
+            attackAnimationPlayer.Play("attack_" + newAnimation.ToString().ToLower());
+        }
+        else
+        {
+            walkSprite.Visible = true;
+            attackSprite.Visible = false;
+            attackAnimationPlayer.Stop(); // Stop any ongoing attack animation
+
+            if (direction.Y < 0) newAnimation = AiAnimation.Up;
+            else if (direction.Y > 0) newAnimation = AiAnimation.Down;
+            else if (direction.X > 0) newAnimation = AiAnimation.Right;
+            else if (direction.X < 0) newAnimation = AiAnimation.Left;
+
+            walkAnimationPlayer.Play("walk_" + newAnimation.ToString().ToLower());
+        }
+
+        currentAnimation = newAnimation;
+    }
+
+    private void MoveAI(Vector2 direction)
+    {
+        if (direction != Vector2.Zero)
+        {
+            Velocity = direction * Speed;
+            MoveAndSlide();
+            UpdateAnimation(direction);
+        }
+    }
+
+    private void KeepWithinBounds()
+    {
+        Vector2 screenSize = GetViewportRect().Size;
+
+        if (GlobalPosition.X < 0 || GlobalPosition.X > screenSize.X)
+            patrolDirection.X *= -1; // Reverse X direction
+
+        if (GlobalPosition.Y < 0 || GlobalPosition.Y > screenSize.Y)
+            patrolDirection.Y *= -1; // Reverse Y direction
+    }
+
+    private void AttackPlayer()
+    {
+        // The AI will just trigger the attack animation when close to the player
+        UpdateAnimation(Vector2.Zero, true); // Trigger attack animation
     }
 }
