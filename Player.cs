@@ -83,7 +83,7 @@ public partial class Player : CharacterBody2D
         Vector2 direction = Input.GetVector("move_left", "move_right", "move_up", "move_down");
         // Sprite2D walkUpSprite = GetNode<Sprite2D>(SprPlayerUpWalk);
         var aniPlayerMoving = GetNode<AnimationPlayer>("walkAnimation");
-        
+
         if (Input.IsActionJustPressed("Attack"))
         {
             isAttacking = true;
@@ -119,13 +119,11 @@ public partial class Player : CharacterBody2D
             {
                 aniPlayerMoving.Play("walkLeft");
                 hideAndShowAni("SprPlayerLeftWalk");
-
             }
             else if (direction.Y > 0)
             {
                 aniPlayerMoving.Play("down");
                 hideAndShowAni("SprPlayerDownWalk");
-
             }
             else if (direction.Y < 0)
             {
@@ -163,7 +161,7 @@ public partial class Player : CharacterBody2D
             velocity = direction.Normalized() * dodgeSpeed;
         }
         else if (velocity == Vector2.Zero && !isAttacking && !isDodging)
-        {   
+        {
             GD.Print(isDodging);
             if (facingDirection == FacingDirection.up)
             {
@@ -193,11 +191,8 @@ public partial class Player : CharacterBody2D
         Velocity = velocity;
         MoveAndSlide();
     }
-
     public override void _Process(double delta)
     {
         physicsPlayer(delta);
     }
-
-
 }
