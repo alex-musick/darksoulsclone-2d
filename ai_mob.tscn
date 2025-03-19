@@ -1,4 +1,4 @@
-[gd_scene load_steps=22 format=3 uid="uid://bt5uohm54j7jg"]
+[gd_scene load_steps=23 format=3 uid="uid://bt5uohm54j7jg"]
 
 [ext_resource type="Script" uid="uid://b2ica2yywx3vc" path="res://AiMob.cs" id="1_0s1ad"]
 [ext_resource type="Texture2D" uid="uid://bc6mmff1vgl5s" path="res://art/EnemyAssets/Golbin/Green goblin/spr_goblin_walk.png" id="2_pqule"]
@@ -125,6 +125,21 @@ _data = {
 &"idle": SubResource("Animation_yrytv")
 }
 
+[sub_resource type="Animation" id="Animation_psrra"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [0]
+}
+
 [sub_resource type="Animation" id="Animation_g0w87"]
 resource_name = "hurt"
 length = 0.4
@@ -141,35 +156,24 @@ tracks/0/keys = {
 "values": [0, 1, 2, 3]
 }
 
-[sub_resource type="Animation" id="Animation_psrra"]
-length = 0.001
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath(".:frame")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 1,
-"values": [0]
-}
-
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_pxuig"]
 _data = {
 &"RESET": SubResource("Animation_psrra"),
 &"hurt": SubResource("Animation_g0w87")
 }
 
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_pqule"]
+radius = 13.0
+height = 36.0
+
 [sub_resource type="CircleShape2D" id="CircleShape2D_6l3xq"]
-radius = 66.0
+radius = 33.0
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_0s1ad"]
-radius = 40.0
-height = 118.0
+radius = 15.0
+height = 50.0
 
-[node name="Node" type="CharacterBody2D"]
+[node name="AiMob" type="CharacterBody2D"]
 script = ExtResource("1_0s1ad")
 
 [node name="WalkSprite" type="Sprite2D" parent="."]
@@ -214,7 +218,6 @@ libraries = {
 }
 
 [node name="IdleSprite" type="Sprite2D" parent="."]
-visible = false
 texture_filter = 1
 position = Vector2(0, -5.72205e-06)
 scale = Vector2(1.90625, 1.81629)
@@ -228,6 +231,7 @@ libraries = {
 }
 
 [node name="HurtSprite" type="Sprite2D" parent="."]
+visible = false
 texture_filter = 1
 position = Vector2(0, -5.72205e-06)
 scale = Vector2(1.90625, 1.81629)
@@ -244,7 +248,8 @@ visible = false
 collision_mask = 2
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Hurtbox"]
-shape = SubResource("CircleShape2D_6l3xq")
+position = Vector2(0, -5)
+shape = SubResource("CapsuleShape2D_pqule")
 
 [node name="Hitbox" type="Area2D" parent="."]
 visible = false
@@ -254,8 +259,7 @@ collision_mask = 2
 shape = SubResource("CircleShape2D_6l3xq")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-visible = false
-position = Vector2(1, 0)
+position = Vector2(-2, 0)
 shape = SubResource("CapsuleShape2D_0s1ad")
 
 [node name="WallRay" type="RayCast2D" parent="."]
