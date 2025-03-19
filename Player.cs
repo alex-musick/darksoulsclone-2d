@@ -134,9 +134,7 @@ public partial class Player : CharacterBody2D
         }
         else if (Input.IsActionJustPressed("Dodge"))
         {
-            GD.Print(isDodging);
             isDodging = true;
-            GD.Print(isDodging);
 
             if (facingDirection == FacingDirection.right)
             {
@@ -162,7 +160,6 @@ public partial class Player : CharacterBody2D
         }
         else if (velocity == Vector2.Zero && !isAttacking && !isDodging)
         {
-            GD.Print(isDodging);
             if (facingDirection == FacingDirection.up)
             {
                 idlePlayer("idleUp");
