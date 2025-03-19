@@ -2,7 +2,11 @@
 
 importer="texture"
 type="CompressedTexture2D"
+<<<<<<< HEAD
 uid="uid://dba1ri8bbk8x2"
+=======
+uid="uid://b7xvql8cfaidm"
+>>>>>>> 42163a95d16891fe4371da14b48fcdf4d753a177
 path="res://.godot/imported/spr_front_wave_animated.png-4736c7c208b896a138ccd9fc5ee0ba4a.ctex"
 metadata={
 "vram_texture": false

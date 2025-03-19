@@ -2,7 +2,11 @@
 
 importer="texture"
 type="CompressedTexture2D"
+<<<<<<< HEAD
 uid="uid://cx0dr280pfsb5"
+=======
+uid="uid://dga300igvmh6k"
+>>>>>>> 42163a95d16891fe4371da14b48fcdf4d753a177
 path="res://.godot/imported/spr_player_back_attack.png-6579258c1bac45e6c373856afd18eb2f.ctex"
 metadata={
 "vram_texture": false

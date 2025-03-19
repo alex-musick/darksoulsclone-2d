@@ -2,7 +2,11 @@
 
 importer="texture"
 type="CompressedTexture2D"
+<<<<<<< HEAD
 uid="uid://8xn3msdgdav8"
+=======
+uid="uid://m2iipneeppab"
+>>>>>>> 42163a95d16891fe4371da14b48fcdf4d753a177
 path="res://.godot/imported/spr_player_right_hit_shadowless.png-f64ca701b82f8acc998db4b8357ecefe.ctex"
 metadata={
 "vram_texture": false

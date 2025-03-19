@@ -2,7 +2,11 @@
 
 importer="texture"
 type="CompressedTexture2D"
+<<<<<<< HEAD
 uid="uid://cdqmbe6uhtxnk"
+=======
+uid="uid://mhx3whbis55p"
+>>>>>>> 42163a95d16891fe4371da14b48fcdf4d753a177
 path="res://.godot/imported/spr_lamp.png-f88718264a48ed383e5a70da9355735a.ctex"
 metadata={
 "vram_texture": false

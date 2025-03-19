@@ -2,7 +2,11 @@
 
 importer="texture"
 type="CompressedTexture2D"
+<<<<<<< HEAD
 uid="uid://dhcqff32tidw7"
+=======
+uid="uid://cvuv3rsg6jmkd"
+>>>>>>> 42163a95d16891fe4371da14b48fcdf4d753a177
 path="res://.godot/imported/spr_water_waves_animated_tileset.png-5aeb057557dc59b5f1d89e014667074e.ctex"
 metadata={
 "vram_texture": false

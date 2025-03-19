@@ -2,7 +2,11 @@
 
 importer="texture"
 type="CompressedTexture2D"
+<<<<<<< HEAD
 uid="uid://dshys3vc7ygnw"
+=======
+uid="uid://cqf2055o187dm"
+>>>>>>> 42163a95d16891fe4371da14b48fcdf4d753a177
 path="res://.godot/imported/spr_ocean_wave_right_intersection.png-7ac58d84fb0c9235dd61af22835b501b.ctex"
 metadata={
 "vram_texture": false

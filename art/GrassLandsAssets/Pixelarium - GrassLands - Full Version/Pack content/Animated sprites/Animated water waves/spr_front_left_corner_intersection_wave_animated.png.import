@@ -2,7 +2,11 @@
 
 importer="texture"
 type="CompressedTexture2D"
+<<<<<<< HEAD
 uid="uid://cdm2uig3p0efk"
+=======
+uid="uid://bim4eodh5a14i"
+>>>>>>> 42163a95d16891fe4371da14b48fcdf4d753a177
 path="res://.godot/imported/spr_front_left_corner_intersection_wave_animated.png-ae136a64b4956768ab7ea5327a5ff00e.ctex"
 metadata={
 "vram_texture": false

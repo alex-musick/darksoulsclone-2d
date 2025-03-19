@@ -2,7 +2,11 @@
 
 importer="texture"
 type="CompressedTexture2D"
+<<<<<<< HEAD
 uid="uid://bbiudcji4bxtr"
+=======
+uid="uid://crd0yo3o2kpvy"
+>>>>>>> 42163a95d16891fe4371da14b48fcdf4d753a177
 path="res://.godot/imported/spr_player_front_attack.png-b11074199ca234cbb23608885b11340d.ctex"
 metadata={
 "vram_texture": false

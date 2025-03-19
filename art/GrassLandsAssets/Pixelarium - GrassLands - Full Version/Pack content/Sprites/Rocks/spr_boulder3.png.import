@@ -2,7 +2,11 @@
 
 importer="texture"
 type="CompressedTexture2D"
+<<<<<<< HEAD
 uid="uid://lp2h7j1sqqg1"
+=======
+uid="uid://b1y3qcyy7sx27"
+>>>>>>> 42163a95d16891fe4371da14b48fcdf4d753a177
 path="res://.godot/imported/spr_boulder3.png-624958b6d439b1590f4453cb920392a3.ctex"
 metadata={
 "vram_texture": false

@@ -2,7 +2,11 @@
 
 importer="texture"
 type="CompressedTexture2D"
+<<<<<<< HEAD
 uid="uid://bedshophb6ve6"
+=======
+uid="uid://db7uxyfiwsvjg"
+>>>>>>> 42163a95d16891fe4371da14b48fcdf4d753a177
 path="res://.godot/imported/crate_particle 1.png-1496f43521881a0de13086d6b66c4334.ctex"
 metadata={
 "vram_texture": false

@@ -2,7 +2,11 @@
 
 importer="texture"
 type="CompressedTexture2D"
+<<<<<<< HEAD
 uid="uid://bwfp2nu71tloy"
+=======
+uid="uid://0na4pheopehw"
+>>>>>>> 42163a95d16891fe4371da14b48fcdf4d753a177
 path="res://.godot/imported/spr_wall_left_side_torch_no_ambientlight.png-292643ec5cdb33926df8c2b0e8228683.ctex"
 metadata={
 "vram_texture": false

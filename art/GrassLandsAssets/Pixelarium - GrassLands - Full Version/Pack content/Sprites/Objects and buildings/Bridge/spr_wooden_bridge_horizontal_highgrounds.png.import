@@ -2,7 +2,11 @@
 
 importer="texture"
 type="CompressedTexture2D"
+<<<<<<< HEAD
 uid="uid://bn8h3knf6y8ya"
+=======
+uid="uid://hs5hh0q6uxqn"
+>>>>>>> 42163a95d16891fe4371da14b48fcdf4d753a177
 path="res://.godot/imported/spr_wooden_bridge_horizontal_highgrounds.png-1361e15362e3c2177761c335ecbe65d3.ctex"
 metadata={
 "vram_texture": false

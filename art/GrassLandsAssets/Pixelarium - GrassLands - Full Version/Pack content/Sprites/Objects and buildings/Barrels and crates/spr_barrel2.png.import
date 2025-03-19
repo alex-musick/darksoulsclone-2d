@@ -2,7 +2,11 @@
 
 importer="texture"
 type="CompressedTexture2D"
+<<<<<<< HEAD
 uid="uid://bwgbp4exm7whj"
+=======
+uid="uid://koeel0r3y4pn"
+>>>>>>> 42163a95d16891fe4371da14b48fcdf4d753a177
 path="res://.godot/imported/spr_barrel2.png-a48ca7e8a77989092ad750dd3615d9b8.ctex"
 metadata={
 "vram_texture": false

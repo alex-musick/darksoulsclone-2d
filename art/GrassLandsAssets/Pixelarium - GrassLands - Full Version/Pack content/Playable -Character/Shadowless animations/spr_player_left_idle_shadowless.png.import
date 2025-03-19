@@ -2,7 +2,11 @@
 
 importer="texture"
 type="CompressedTexture2D"
+<<<<<<< HEAD
 uid="uid://bx4vb0mfuphbw"
+=======
+uid="uid://n0a6b21s47au"
+>>>>>>> 42163a95d16891fe4371da14b48fcdf4d753a177
 path="res://.godot/imported/spr_player_left_idle_shadowless.png-7beb5e509c62be5c2fd415889bee44a9.ctex"
 metadata={
 "vram_texture": false

@@ -2,7 +2,11 @@
 
 importer="texture"
 type="CompressedTexture2D"
+<<<<<<< HEAD
 uid="uid://bodpkrwb62wrj"
+=======
+uid="uid://b1txv2quga0e3"
+>>>>>>> 42163a95d16891fe4371da14b48fcdf4d753a177
 path="res://.godot/imported/spr_right_side_wooden_postlamp_no_ambientlight.png-3616658349cca7af31d85fb5a12207dc.ctex"
 metadata={
 "vram_texture": false

@@ -2,7 +2,11 @@
 
 importer="texture"
 type="CompressedTexture2D"
+<<<<<<< HEAD
 uid="uid://bi53r815dg48o"
+=======
+uid="uid://bxvlagakbmqyl"
+>>>>>>> 42163a95d16891fe4371da14b48fcdf4d753a177
 path="res://.godot/imported/spr_right_front_fence_ending.png-5d4bbc7cf666e0c0c30eb7c584d195d9.ctex"
 metadata={
 "vram_texture": false

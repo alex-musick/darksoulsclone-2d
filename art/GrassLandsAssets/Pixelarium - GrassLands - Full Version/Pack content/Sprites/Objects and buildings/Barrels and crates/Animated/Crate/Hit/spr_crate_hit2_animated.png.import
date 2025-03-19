@@ -2,7 +2,11 @@
 
 importer="texture"
 type="CompressedTexture2D"
+<<<<<<< HEAD
 uid="uid://f730vmvlvdcr"
+=======
+uid="uid://wxm1qyf7pdbi"
+>>>>>>> 42163a95d16891fe4371da14b48fcdf4d753a177
 path="res://.godot/imported/spr_crate_hit2_animated.png-0cbe193f28b4d61455f00900ecfab7b3.ctex"
 metadata={
 "vram_texture": false

@@ -2,7 +2,11 @@
 
 importer="texture"
 type="CompressedTexture2D"
+<<<<<<< HEAD
 uid="uid://cm82uj3lotepq"
+=======
+uid="uid://cowqfplbf10cp"
+>>>>>>> 42163a95d16891fe4371da14b48fcdf4d753a177
 path="res://.godot/imported/spr_left_side_fence_three-intersection.png-35fae8518ab5a0e57cdf71363877b1ab.ctex"
 metadata={
 "vram_texture": false

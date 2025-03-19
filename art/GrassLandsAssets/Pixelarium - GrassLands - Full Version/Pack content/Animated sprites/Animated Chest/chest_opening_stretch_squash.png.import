@@ -2,7 +2,11 @@
 
 importer="texture"
 type="CompressedTexture2D"
+<<<<<<< HEAD
 uid="uid://ctgctsdy5q8df"
+=======
+uid="uid://5ux5wy5o2nb0"
+>>>>>>> 42163a95d16891fe4371da14b48fcdf4d753a177
 path="res://.godot/imported/chest_opening_stretch_squash.png-9eafceef7f265fececdf514be77b4482.ctex"
 metadata={
 "vram_texture": false

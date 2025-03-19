@@ -2,7 +2,11 @@
 
 importer="texture"
 type="CompressedTexture2D"
+<<<<<<< HEAD
 uid="uid://bbsken4uiwlqe"
+=======
+uid="uid://dldkj4p2x7d5j"
+>>>>>>> 42163a95d16891fe4371da14b48fcdf4d753a177
 path="res://.godot/imported/spr_wooden_sign_cave.png-4fe8aac4eb6c12203e00adcaf6b68355.ctex"
 metadata={
 "vram_texture": false

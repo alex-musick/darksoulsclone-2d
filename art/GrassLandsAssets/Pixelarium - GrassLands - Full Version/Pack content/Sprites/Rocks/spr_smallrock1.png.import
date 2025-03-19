@@ -2,7 +2,11 @@
 
 importer="texture"
 type="CompressedTexture2D"
+<<<<<<< HEAD
 uid="uid://cewpyoahyjaab"
+=======
+uid="uid://cnnlsl1ht8ohx"
+>>>>>>> 42163a95d16891fe4371da14b48fcdf4d753a177
 path="res://.godot/imported/spr_smallrock1.png-9e1a958773f2cf70b970a4860257b265.ctex"
 metadata={
 "vram_texture": false

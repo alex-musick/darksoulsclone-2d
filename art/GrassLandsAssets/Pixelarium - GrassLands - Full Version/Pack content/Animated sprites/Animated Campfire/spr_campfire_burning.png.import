@@ -2,7 +2,11 @@
 
 importer="texture"
 type="CompressedTexture2D"
+<<<<<<< HEAD
 uid="uid://mq1q2l223ym8"
+=======
+uid="uid://cly6fo04l2tng"
+>>>>>>> 42163a95d16891fe4371da14b48fcdf4d753a177
 path="res://.godot/imported/spr_campfire_burning.png-d4b1f353177c645518f99b06e4d11184.ctex"
 metadata={
 "vram_texture": false

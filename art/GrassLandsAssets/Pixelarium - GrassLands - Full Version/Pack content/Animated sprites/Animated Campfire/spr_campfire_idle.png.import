@@ -2,7 +2,11 @@
 
 importer="texture"
 type="CompressedTexture2D"
+<<<<<<< HEAD
 uid="uid://bilfc662en4kr"
+=======
+uid="uid://cuqbgesy85khu"
+>>>>>>> 42163a95d16891fe4371da14b48fcdf4d753a177
 path="res://.godot/imported/spr_campfire_idle.png-082e9366da31d726c59757f9bd73043e.ctex"
 metadata={
 "vram_texture": false
