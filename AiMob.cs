@@ -3,6 +3,10 @@ using System;
 
 public partial class AiMob : CharacterBody2D
 {
+    [Export] public int MaxHealth = 100;
+    [Export] public int AttackDamage = 10;
+    private int currentHealth;
+
     [Export] public float Speed = 75f;
     [Export] public float DetectionRange = 200f;
     [Export] public float PatrolTime = 2f;
@@ -19,10 +23,10 @@ public partial class AiMob : CharacterBody2D
     private static readonly Random random = new Random();
     private enum AiAnimation { Idle, Up, Down, Left, Right }
     private AiAnimation currentAnimation;
-    private Sprite2D walkSprite;
-    private Sprite2D attackSprite;
-    private AnimationPlayer walkAnimationPlayer;
-    private AnimationPlayer attackAnimationPlayer;
+    private Sprite2D idleSprite;
+    private Sprite2D hurtSprite;
+    private AnimationPlayer idleAnimationPlayer;
+    private AnimationPlayer hurtAnimationPlayer;
 
     public override void _Ready()
     {
@@ -32,45 +36,46 @@ public partial class AiMob : CharacterBody2D
         wallRay = GetNode<RayCast2D>("WallRay");
         detectionArea = GetNode<Area2D>("DetectionArea");
 
-        walkSprite = GetNodeOrNull<Sprite2D>("WalkSprite2D");
-        attackSprite = GetNodeOrNull<Sprite2D>("AttackSprite2D");
+        idleSprite = GetNodeOrNull<Sprite2D>("IdleSprite");
+        hurtSprite = GetNodeOrNull<Sprite2D>("HurtSprite");
 
-        if (walkSprite != null)
-            walkAnimationPlayer = walkSprite.GetNodeOrNull<AnimationPlayer>("AnimationPlayer");
+        if (idleSprite != null)
+            idleAnimationPlayer = idleSprite.GetNodeOrNull<AnimationPlayer>("AnimationPlayer");
 
-        if (attackSprite != null)
-            attackAnimationPlayer = attackSprite.GetNodeOrNull<AnimationPlayer>("AnimationPlayer");
+        if (hurtSprite != null)
+            hurtAnimationPlayer = hurtSprite.GetNodeOrNull<AnimationPlayer>("AnimationPlayer");
 
-        if (walkSprite == null || attackSprite == null || walkAnimationPlayer == null || attackAnimationPlayer == null)
+        if (idleSprite == null || hurtSprite == null || idleAnimationPlayer == null || hurtAnimationPlayer == null)
         {
             GD.PrintErr("Error: Missing required nodes in AiMob.");
             return;
         }
 
-        walkSprite.Visible = true;
-        attackSprite.Visible = false;
+        currentHealth = MaxHealth;
+
+        idleSprite.Visible = true;
+        hurtSprite.Visible = false;
 
         detectionArea.Connect("body_entered", Callable.From((Node body) => OnPlayerEntered(body)));
         detectionArea.Connect("body_exited", Callable.From((Node body) => OnPlayerExited(body)));
         patrolTimer = PatrolTime;
         ChooseNewPatrolDirection();
+
+        Area2D hurtbox = GetNodeOrNull<Area2D>("Hurtbox");
+        if (hurtbox != null)
+        {
+            hurtbox.Connect("area_entered", Callable.From((Area2D area) => OnHit(area)));
+        }
+
+        UpdateAnimation(false);
     }
 
     public override void _PhysicsProcess(double delta)
     {
         if (player != null && CanSeePlayer())
         {
-            // Trigger attack if the player is within a certain range (e.g., 50 units)
-            if (GlobalPosition.DistanceTo(player.GlobalPosition) < 50f)
-            {
-                // Trigger attack animation
-                UpdateAnimation(Vector2.Zero, true); // You can customize direction if needed
-            }
-            else
-            {
-                // Chase the player if it's not within attack range
-                ChasePlayer();
-            }
+            // Chase the player if it's not within attack range
+            ChasePlayer();
         }
         else
         {
@@ -148,44 +153,26 @@ public partial class AiMob : CharacterBody2D
         patrolTimer = PatrolTime;
     }
 
-    private void UpdateAnimation(Vector2 direction, bool isAttacking = false)
+    private void UpdateAnimation(bool isHurt)
     {
-        if (walkSprite == null || attackSprite == null || walkAnimationPlayer == null || attackAnimationPlayer == null)
+        if (idleSprite == null || hurtSprite == null || idleAnimationPlayer == null || hurtAnimationPlayer == null)
         {
             GD.PrintErr("UpdateAnimation: Sprite or AnimationPlayer is null.");
             return;
         }
 
-        AiAnimation newAnimation = currentAnimation;
-
-        if (isAttacking)
+        if (isHurt)
         {
-            walkSprite.Visible = false;
-            attackSprite.Visible = true;
-            walkAnimationPlayer.Stop(); // Stop any ongoing walk animation
-
-            if (direction.Y < 0) newAnimation = AiAnimation.Up;
-            else if (direction.Y > 0) newAnimation = AiAnimation.Down;
-            else if (direction.X > 0) newAnimation = AiAnimation.Right;
-            else if (direction.X < 0) newAnimation = AiAnimation.Left;
-
-            attackAnimationPlayer.Play("attack_" + newAnimation.ToString().ToLower());
+            hurtSprite.Visible = true;
+            idleSprite.Visible = false;
+            hurtAnimationPlayer.Play("hurt");
         }
         else
         {
-            walkSprite.Visible = true;
-            attackSprite.Visible = false;
-            attackAnimationPlayer.Stop(); // Stop any ongoing attack animation
-
-            if (direction.Y < 0) newAnimation = AiAnimation.Up;
-            else if (direction.Y > 0) newAnimation = AiAnimation.Down;
-            else if (direction.X > 0) newAnimation = AiAnimation.Right;
-            else if (direction.X < 0) newAnimation = AiAnimation.Left;
-
-            walkAnimationPlayer.Play("walk_" + newAnimation.ToString().ToLower());
+            hurtSprite.Visible = false;
+            idleSprite.Visible = true;
+            idleAnimationPlayer.Play("idle");
         }
-
-        currentAnimation = newAnimation;
     }
 
     private void MoveAI(Vector2 direction)
@@ -194,7 +181,6 @@ public partial class AiMob : CharacterBody2D
         {
             Velocity = direction * Speed;
             MoveAndSlide();
-            UpdateAnimation(direction);
         }
     }
 
@@ -209,9 +195,30 @@ public partial class AiMob : CharacterBody2D
             patrolDirection.Y *= -1; // Reverse Y direction
     }
 
-    private void AttackPlayer()
+    public void TakeDamage(int damage)
     {
-        // The AI will just trigger the attack animation when close to the player
-        UpdateAnimation(Vector2.Zero, true); // Trigger attack animation
+        currentHealth -= damage;
+        GD.Print($"AiMob took {damage} damage! Current health: {currentHealth}");
+
+        if (currentHealth <= 0)
+        {
+            Die();
+        }
+        else
+        {
+            UpdateAnimation(true);
+            GetTree().CreateTimer(0.5f).Timeout += () => UpdateAnimation(false);
+        }
+    }
+
+    private void Die()
+    {
+        GD.Print("AiMob has died.");
+        QueueFree(); // Remove the AI from the scene
+    }
+
+    private void OnHit(Area2D area)
+    {
+        TakeDamage(10); // AI takes a fixed amount of damage when hit
     }
 }
