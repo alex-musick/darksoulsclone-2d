@@ -1,4 +1,4 @@
-[gd_scene load_steps=23 format=3 uid="uid://bt5uohm54j7jg"]
+[gd_scene load_steps=14 format=3 uid="uid://bt5uohm54j7jg"]
 
 [ext_resource type="Script" uid="uid://b2ica2yywx3vc" path="res://AiMob.cs" id="1_0s1ad"]
 [ext_resource type="Texture2D" uid="uid://bc6mmff1vgl5s" path="res://art/EnemyAssets/Golbin/Green goblin/spr_goblin_walk.png" id="2_pqule"]
@@ -12,10 +12,34 @@ length = 0.001
 tracks/0/type = "value"
 tracks/0/imported = false
 tracks/0/enabled = true
-tracks/0/path = NodePath(".:frame")
+tracks/0/path = NodePath("WalkSprite:frame")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [1]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("AttackSprite:frame")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [0]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("Hitbox:disable_mode")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
 "times": PackedFloat32Array(0),
 "transitions": PackedFloat32Array(1),
 "update": 1,
@@ -24,50 +48,29 @@ tracks/0/keys = {
 
 [sub_resource type="Animation" id="Animation_pqule"]
 resource_name = "ai_right"
-length = 0.6
+length = 0.5
 loop_mode = 1
 tracks/0/type = "value"
 tracks/0/imported = false
 tracks/0/enabled = true
-tracks/0/path = NodePath(".:frame")
+tracks/0/path = NodePath("WalkSprite:frame")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/keys = {
-"times": PackedFloat32Array(0, 0.1, 0.2, 0.3, 0.4, 0.5),
-"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1),
+"times": PackedFloat32Array(0, 0.1, 0.2, 0.3, 0.4),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1),
 "update": 1,
-"values": [0, 1, 2, 3, 4, 5]
+"values": [1, 2, 3, 4, 5]
 }
 
-[sub_resource type="AnimationLibrary" id="AnimationLibrary_dej36"]
-_data = {
-&"RESET": SubResource("Animation_6l3xq"),
-&"walk_right": SubResource("Animation_pqule")
-}
-
-[sub_resource type="Animation" id="Animation_j1xmd"]
-length = 0.001
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath(".:frame")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 1,
-"values": [0]
-}
-
-[sub_resource type="Animation" id="Animation_ql8qf"]
+[sub_resource type="Animation" id="Animation_dej36"]
 resource_name = "attack"
 length = 1.4
 loop_mode = 1
 tracks/0/type = "value"
 tracks/0/imported = false
 tracks/0/enabled = true
-tracks/0/path = NodePath(".:frame")
+tracks/0/path = NodePath("AttackSprite:frame")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/keys = {
@@ -76,90 +79,24 @@ tracks/0/keys = {
 "update": 1,
 "values": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
 }
-
-[sub_resource type="AnimationLibrary" id="AnimationLibrary_ql8qf"]
-_data = {
-&"RESET": SubResource("Animation_j1xmd"),
-&"attack": SubResource("Animation_ql8qf")
-}
-
-[sub_resource type="Animation" id="Animation_5ui0a"]
-resource_name = "death"
-length = 0.8
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath(".:frame")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/keys = {
-"times": PackedFloat32Array(0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7),
-"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1),
-"update": 1,
-"values": [0, 1, 2, 3, 4, 5, 6, 7]
-}
-
-[sub_resource type="AnimationLibrary" id="AnimationLibrary_41a6v"]
-_data = {
-&"death": SubResource("Animation_5ui0a")
-}
-
-[sub_resource type="Animation" id="Animation_yrytv"]
-resource_name = "idle"
-length = 0.9
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath(".:frame")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/keys = {
-"times": PackedFloat32Array(0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8),
-"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1),
-"update": 1,
-"values": [0, 1, 2, 3, 4, 5, 6, 7, 8]
-}
-
-[sub_resource type="AnimationLibrary" id="AnimationLibrary_hl2m6"]
-_data = {
-&"idle": SubResource("Animation_yrytv")
-}
-
-[sub_resource type="Animation" id="Animation_psrra"]
-length = 0.001
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath(".:frame")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/keys = {
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Hitbox:disable_mode")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
 "times": PackedFloat32Array(0),
 "transitions": PackedFloat32Array(1),
 "update": 1,
 "values": [0]
 }
 
-[sub_resource type="Animation" id="Animation_g0w87"]
-resource_name = "hurt"
-length = 0.4
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath(".:frame")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/keys = {
-"times": PackedFloat32Array(0, 0.1, 0.2, 0.3),
-"transitions": PackedFloat32Array(1, 1, 1, 1),
-"update": 1,
-"values": [0, 1, 2, 3]
-}
-
-[sub_resource type="AnimationLibrary" id="AnimationLibrary_pxuig"]
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_dej36"]
 _data = {
-&"RESET": SubResource("Animation_psrra"),
-&"hurt": SubResource("Animation_g0w87")
+&"RESET": SubResource("Animation_6l3xq"),
+&"attack": SubResource("Animation_dej36"),
+&"walk": SubResource("Animation_pqule")
 }
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_pqule"]
@@ -176,6 +113,12 @@ height = 50.0
 [node name="AiMob" type="CharacterBody2D"]
 script = ExtResource("1_0s1ad")
 
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+libraries = {
+&"": SubResource("AnimationLibrary_dej36")
+}
+speed_scale = 0.6
+
 [node name="WalkSprite" type="Sprite2D" parent="."]
 visible = false
 texture_filter = 1
@@ -183,26 +126,15 @@ position = Vector2(0, 1)
 scale = Vector2(1.90625, 1.81629)
 texture = ExtResource("2_pqule")
 hframes = 6
+frame = 1
 script = ExtResource("1_0s1ad")
 
-[node name="AnimationPlayer" type="AnimationPlayer" parent="WalkSprite"]
-libraries = {
-&"": SubResource("AnimationLibrary_dej36")
-}
-speed_scale = 0.6
-
 [node name="AttackSprite" type="Sprite2D" parent="."]
-visible = false
 texture_filter = 1
 position = Vector2(0, -5.72205e-06)
 scale = Vector2(1.90625, 1.81629)
 texture = ExtResource("3_dej36")
 hframes = 14
-
-[node name="AnimationPlayer" type="AnimationPlayer" parent="AttackSprite"]
-libraries = {
-&"": SubResource("AnimationLibrary_ql8qf")
-}
 
 [node name="DeathSprite" type="Sprite2D" parent="."]
 visible = false
@@ -212,23 +144,13 @@ scale = Vector2(1.90625, 1.81629)
 texture = ExtResource("4_0ob2f")
 hframes = 8
 
-[node name="AnimationPlayer" type="AnimationPlayer" parent="DeathSprite"]
-libraries = {
-&"": SubResource("AnimationLibrary_41a6v")
-}
-
 [node name="IdleSprite" type="Sprite2D" parent="."]
+visible = false
 texture_filter = 1
 position = Vector2(0, -5.72205e-06)
 scale = Vector2(1.90625, 1.81629)
 texture = ExtResource("5_mkv61")
 hframes = 9
-frame = 8
-
-[node name="AnimationPlayer" type="AnimationPlayer" parent="IdleSprite"]
-libraries = {
-&"": SubResource("AnimationLibrary_hl2m6")
-}
 
 [node name="HurtSprite" type="Sprite2D" parent="."]
 visible = false
@@ -237,11 +159,6 @@ position = Vector2(0, -5.72205e-06)
 scale = Vector2(1.90625, 1.81629)
 texture = ExtResource("6_q26fp")
 hframes = 4
-
-[node name="AnimationPlayer" type="AnimationPlayer" parent="HurtSprite"]
-libraries = {
-&"": SubResource("AnimationLibrary_pxuig")
-}
 
 [node name="Hurtbox" type="Area2D" parent="."]
 visible = false
@@ -259,12 +176,17 @@ collision_mask = 2
 shape = SubResource("CircleShape2D_6l3xq")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+visible = false
 position = Vector2(-2, 0)
 shape = SubResource("CapsuleShape2D_0s1ad")
 
 [node name="WallRay" type="RayCast2D" parent="."]
+visible = false
 target_position = Vector2(48, 0)
 
 [node name="NavAgent2D" type="NavigationAgent2D" parent="."]
 
 [node name="VisionRay" type="RayCast2D" parent="."]
+visible = false
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
