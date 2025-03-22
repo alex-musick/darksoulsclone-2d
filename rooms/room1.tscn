@@ -1,7 +1,8 @@
-[gd_scene load_steps=15 format=4 uid="uid://8rp6vcwyipfn"]
+[gd_scene load_steps=16 format=4 uid="uid://8rp6vcwyipfn"]
 
 [ext_resource type="TileSet" uid="uid://d4joggdbfkxel" path="res://art/basic_world_tiles.tres" id="1_lwhkg"]
 [ext_resource type="PackedScene" uid="uid://btfbee3hv51oi" path="res://player.tscn" id="2_n2rm1"]
+[ext_resource type="PackedScene" uid="uid://bt5uohm54j7jg" path="res://ai_mob.tscn" id="3_yv82f"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_lwhkg"]
 size = Vector2(65, 74)
@@ -156,3 +157,6 @@ shape = SubResource("CircleShape2D_n2rm1")
 [node name="CollisionShape2D11" type="CollisionShape2D" parent="TreeColliders"]
 position = Vector2(855, 100)
 shape = SubResource("CircleShape2D_n2rm1")
+
+[node name="AiMob" parent="." instance=ExtResource("3_yv82f")]
+position = Vector2(812, 532)

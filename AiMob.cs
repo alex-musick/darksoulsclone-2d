@@ -3,222 +3,226 @@ using System;
 
 public partial class AiMob : CharacterBody2D
 {
+	// State Machine
+	private enum State
+	{
+		Idle,
+		Chase,
+		Attack,
+		Hurt,
+		Dead
+	}
+	private State _currentState = State.Idle;
+
+	// Exported Properties
 	[Export] public int MaxHealth = 100;
-	[Export] public int AttackDamage = 10;
-	private int currentHealth;
+	[Export] public float MoveSpeed = 150f;
+	[Export] public float AttackRange = 50f;
+	[Export] public float VisionRange = 300f;
 
-	[Export] public float Speed = 75f;
-	[Export] public float DetectionRange = 200f;
-	[Export] public float PatrolTime = 2f;
+	// Nodes
+	private NavigationAgent2D _navAgent;
+	private RayCast2D _visionRay;
+	private RayCast2D _wallRay;
+	private AnimationPlayer _animPlayer;
+	private Node2D _player;
 
-	private Node2D player;
-	private NavigationAgent2D navAgent;
-	private AnimationPlayer animationPlayer;
-	private RayCast2D visionRay;
-	private float patrolTimer;
-	private RayCast2D wallRay;
-	private Area2D hitbox;
-	private Vector2 targetPatrolDirection;
-	private Vector2 patrolDirection;
-	private static readonly Random random = new Random();
-	private enum AiAnimation { Idle, Up, Down, Left, Right }
-	private AiAnimation currentAnimation;
-	private Sprite2D idleSprite;
-	private Sprite2D hurtSprite;
-	private AnimationPlayer idleAnimationPlayer;
-	private AnimationPlayer hurtAnimationPlayer;
+	// Internal Variables
+	private int _currentHealth;
+	private bool _playerVisible;
+	private bool _attackCooldown;
 
 	public override void _Ready()
 	{
-		navAgent = GetNode<NavigationAgent2D>("NavAgent2D");
-		visionRay = GetNode<RayCast2D>("VisionRay");
-		player = GetNodeOrNull<Node2D>("/root/TestRoom/Player");
-		wallRay = GetNode<RayCast2D>("WallRay");
-		hitbox = GetNode<Area2D>("Hitbox");
+		_currentHealth = MaxHealth;
+		_navAgent = GetNode<NavigationAgent2D>("NavAgent2D");
+		_visionRay = GetNode<RayCast2D>("VisionRay");
+		_wallRay = GetNode<RayCast2D>("WallRay");
+		_animPlayer = GetNode<AnimationPlayer>("AnimationPlayer");
 
-		idleSprite = GetNodeOrNull<Sprite2D>("IdleSprite");
-		hurtSprite = GetNodeOrNull<Sprite2D>("HurtSprite");
+		_player = GetNode<CharacterBody2D>("/root/rooms/Player"); // Adjust path
 
-		if (idleSprite != null)
-			idleAnimationPlayer = idleSprite.GetNodeOrNull<AnimationPlayer>("AnimationPlayer");
+		SetupNavigation();
+		StartPathUpdateTimer();
+	}
 
-		if (hurtSprite != null)
-			hurtAnimationPlayer = hurtSprite.GetNodeOrNull<AnimationPlayer>("AnimationPlayer");
+	private void SetupNavigation()
+	{
+		_navAgent.PathDesiredDistance = 4f;
+		_navAgent.TargetDesiredDistance = 4f;
+	}
 
-		if (idleSprite == null || hurtSprite == null || idleAnimationPlayer == null || hurtAnimationPlayer == null)
+	private void StartPathUpdateTimer()
+	{
+		Timer pathUpdateTimer = new Timer();
+		AddChild(pathUpdateTimer);
+		pathUpdateTimer.WaitTime = 0.5f;
+		pathUpdateTimer.Timeout += UpdatePath;
+		pathUpdateTimer.Start();
+	}
+
+	private void UpdatePath()
+	{
+		if (_player != null && !IsDead())
 		{
-			GD.PrintErr("Error: Missing required nodes in AiMob.");
-			return;
+			GD.Print("Updating Path to Player: " + _player.GlobalPosition);
+			_navAgent.TargetPosition = _player.GlobalPosition;
 		}
-
-		currentHealth = MaxHealth;
-
-		idleSprite.Visible = true;
-		hurtSprite.Visible = false;
-
-		hitbox.Connect("body_entered", Callable.From((Node body) => OnPlayerEntered(body)));
-		hitbox.Connect("body_exited", Callable.From((Node body) => OnPlayerExited(body)));
-		patrolTimer = PatrolTime;
-		ChooseNewPatrolDirection();
-
-		Area2D hurtbox = GetNodeOrNull<Area2D>("Hurtbox");
-		if (hurtbox != null)
-		{
-			hurtbox.Connect("area_entered", Callable.From((Area2D area) => OnHit(area)));
-		}
-
-		UpdateAnimation(false);
 	}
 
 	public override void _PhysicsProcess(double delta)
 	{
-		if (player != null && CanSeePlayer())
+		if (IsDead()) return;
+
+		UpdateVision();
+		UpdateState();
+		UpdateAnimation();
+
+		switch (_currentState)
 		{
-			// Chase the player if it's not within attack range
-			ChasePlayer();
+			case State.Chase:
+				HandleMovement();
+				CheckAttackRange();
+				break;
+
+			case State.Attack:
+				HandleAttack();
+				break;
+		}
+	}
+
+	private void UpdateVision()
+	{
+		if (_player == null) return;
+
+		Vector2 playerDirection = (_player.GlobalPosition - GlobalPosition).Normalized();
+		_visionRay.TargetPosition = playerDirection * VisionRange;
+		_visionRay.ForceRaycastUpdate();
+
+		_playerVisible = _visionRay.IsColliding() &&
+					   _visionRay.GetCollider() == _player &&
+					   !_wallRay.IsColliding();
+	}
+
+	private void UpdateState()
+	{
+		if (_currentState == State.Hurt || _currentState == State.Dead) return;
+
+		if (_playerVisible)
+		{
+			if (Position.DistanceTo(_player.GlobalPosition) <= AttackRange)
+				_currentState = State.Attack;
+			else
+				_currentState = State.Chase;
 		}
 		else
 		{
-			Patrol((float)delta);
-		}
-
-		KeepWithinBounds();
-	}
-
-	private void OnPlayerEntered(Node body)
-	{
-		if (body is Node2D detectedPlayer)
-		{
-			player = detectedPlayer;
+			_currentState = State.Idle;
 		}
 	}
 
-	private void OnPlayerExited(Node body)
+	private void HandleMovement()
 	{
-		if (body == player)
+		if (_navAgent.IsNavigationFinished()) 
 		{
-			player = null;
-		}
-	}
-
-	private bool CanSeePlayer()
-	{
-		if (player == null) return false;
-		if (GlobalPosition.DistanceTo(player.GlobalPosition) > DetectionRange) return false;
-
-		visionRay.GlobalPosition = GlobalPosition;
-		visionRay.TargetPosition = ToLocal(player.GlobalPosition).Normalized() * DetectionRange;
-		visionRay.ForceRaycastUpdate();
-
-		return !visionRay.IsColliding();
-	}
-
-	private void ChasePlayer()
-	{
-		navAgent.TargetPosition = player.GlobalPosition;
-		Vector2 direction = (navAgent.GetNextPathPosition() - GlobalPosition).Normalized();
-		MoveAI(direction);
-	}
-
-	private void Patrol(float delta)
-	{
-		patrolTimer -= delta;
-
-		patrolDirection = patrolDirection.Lerp(targetPatrolDirection, 0.2f);
-
-		wallRay.TargetPosition = patrolDirection * 50;
-		wallRay.ForceRaycastUpdate();
-
-		if (patrolTimer <= 0 || wallRay.IsColliding())
-		{
-			ChooseNewPatrolDirection();
-		}
-
-		MoveAI(patrolDirection);
-	}
-
-	private void ChooseNewPatrolDirection()
-	{
-		int randomDirection = random.Next(4); // 0 = left, 1 = right, 2 = up, 3 = down
-
-		switch (randomDirection)
-		{
-			case 0: targetPatrolDirection = Vector2.Left; break;
-			case 1: targetPatrolDirection = Vector2.Right; break;
-			case 2: targetPatrolDirection = Vector2.Up; break;
-			case 3: targetPatrolDirection = Vector2.Down; break;
-		}
-
-		patrolDirection = targetPatrolDirection;
-		patrolTimer = PatrolTime;
-	}
-
-	private void UpdateAnimation(bool isHurt)
-	{
-		if (idleSprite == null || hurtSprite == null || idleAnimationPlayer == null || hurtAnimationPlayer == null)
-		{
-			GD.PrintErr("UpdateAnimation: Sprite or AnimationPlayer is null.");
+			GD.Print("Navigation Finished - No movement");
 			return;
 		}
 
-		if (isHurt)
-		{
-			hurtSprite.Visible = true;
-			idleSprite.Visible = false;
-			hurtAnimationPlayer.Play("hurt");
-		}
-		else
-		{
-			hurtSprite.Visible = false;
-			idleSprite.Visible = true;
-			idleAnimationPlayer.Play("idle");
-		}
-	}
+		Vector2 nextPosition = _navAgent.GetNextPathPosition();
+		Vector2 direction = Position.DirectionTo(nextPosition);
 
-	private void MoveAI(Vector2 direction)
-	{
-		if (direction != Vector2.Zero)
+		if (direction.Length() > 0)
 		{
-			Velocity = direction * Speed;
+			GD.Print("Moving towards: " + nextPosition);
+			Velocity = direction * MoveSpeed;
 			MoveAndSlide();
 		}
 	}
 
-	private void KeepWithinBounds()
+	private void CheckAttackRange()
 	{
-		Vector2 screenSize = GetViewportRect().Size;
-
-		if (GlobalPosition.X < 0 || GlobalPosition.X > screenSize.X)
-			patrolDirection.X *= -1; // Reverse X direction
-
-		if (GlobalPosition.Y < 0 || GlobalPosition.Y > screenSize.Y)
-			patrolDirection.Y *= -1; // Reverse Y direction
+		if (Position.DistanceTo(_player.GlobalPosition) <= AttackRange)
+			_currentState = State.Attack;
 	}
 
-	public void TakeDamage(int damage)
+	private async void HandleAttack()
 	{
-		currentHealth -= damage;
-		GD.Print($"AiMob took {damage} damage! Current health: {currentHealth}");
+		if (_attackCooldown) return;
 
-		if (currentHealth <= 0)
+		_attackCooldown = true;
+		_animPlayer.Play("attack");
+		await ToSignal(_animPlayer, "animation_finished");
+		_attackCooldown = false;
+	}
+
+	private void UpdateAnimation()
+	{
+		switch (_currentState)
 		{
-			Die();
+			case State.Idle:
+				_animPlayer.Play("idle");
+				break;
+
+			case State.Chase:
+				_animPlayer.Play("walk");
+				break;
+
+			case State.Attack:
+				_animPlayer.Play("attack");
+				break;
+		}
+	}
+
+	private void TakeDamage(int damage)
+	{
+		if (IsDead()) return;
+
+		_currentHealth -= damage;
+
+		if (_currentHealth <= 0)
+		{
+			SetState(State.Dead);
+			_animPlayer.Play("death");
+			GetNode<CollisionShape2D>("CollisionShape2D").SetDeferred("disabled", true);
+			GetNode<Area2D>("Hitbox").Monitoring = false;
 		}
 		else
 		{
-			UpdateAnimation(true);
-			GetTree().CreateTimer(0.5f).Timeout += () => UpdateAnimation(false);
+			SetState(State.Hurt);
+			_animPlayer.Play("hurt");
+			GetTree().CreateTimer(0.5f).Timeout += () => SetState(State.Chase);
 		}
 	}
 
-	private void Die()
+	private void SetState(State newState)
 	{
-		GD.Print("AiMob has died.");
-		QueueFree(); // Remove the AI from the scene
+		_currentState = newState;
 	}
 
-	private void OnHit(Area2D area)
+	private bool IsDead()
 	{
-		TakeDamage(10); // AI takes a fixed amount of damage when hit
+		return _currentState == State.Dead;
+	}
+
+	private void _on_Hitbox_body_entered(Node2D body)
+	{
+		if (body.Name == "Player" && _currentState == State.Attack)
+		{
+			body.Call("TakeDamage", 10);
+		}
+	}
+
+	private void _on_Hurtbox_area_entered(Area2D area)
+	{
+		if (area.IsInGroup("player_attack"))
+		{
+			TakeDamage((int)area.Get("damage"));
+		}
+	}
+
+	private void _on_DeathAnimation_finished()
+	{
+		QueueFree();
 	}
 }
