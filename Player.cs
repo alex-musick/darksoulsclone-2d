@@ -7,7 +7,7 @@ public partial class Player : CharacterBody2D
 {
     [Export]
     public int Speed { get; set; } = 75; // How fast the player will move (pixels/sec).
-    public int dodgeSpeed { get; set; } = 100;
+    public int dodgeSpeed { get; set; } = 125;
     public int damage { get; private set; } = 1;
     private int health = 5;
     private int stamina = 5;
@@ -19,6 +19,7 @@ public partial class Player : CharacterBody2D
     [Export] public bool isAttacking = false;
     [Export] public bool isDodging = false;
     public static Player instance;
+    Variant dodgingDirection;
 
     public Vector2 ScreenSize;
 
@@ -33,10 +34,36 @@ public partial class Player : CharacterBody2D
 
         aniPlayer.Play(attackName);
     }
+    public void hitTaken(string hitName)
+    {
+        var aniPlayer = GetNode<AnimationPlayer>("hitAnimation");
+        aniPlayer.Play(hitName);
+    }
     private void _on_hit_box_area_entered(Area2D col)
     {
         GD.Print("damage taken");
         health--;
+        if (facingDirection == FacingDirection.up)
+        {
+            hitTaken("SprPlayerUpHit");
+            hideAndShowAni("SprPlayerUpHit");
+        }
+        else if (facingDirection == FacingDirection.down)
+        {
+            hitTaken("SprPlayerDownHit");
+            hideAndShowAni("SprPlayerDownHit");
+        }
+        else if (facingDirection == FacingDirection.left)
+        {
+            hitTaken("SprPlayerLeftHit");
+            hideAndShowAni("SprPlayerLeftHit");
+        }
+        else if (facingDirection == FacingDirection.right)
+        {
+            hitTaken("SprPlayerRightHit");
+            hideAndShowAni("SprPlayerRightHit");
+        }
+
     }
     public void hideSprite(string spriteName)
     {
@@ -51,7 +78,9 @@ public partial class Player : CharacterBody2D
         List<string> animations = new List<string> {"SprPlayerUpWalk", "SprPlayerDownWalk", "SprPlayerLeftWalk", "SprPlayerRightWalk",
         "SprPlayerUpAttack", "SprPlayerDownAttack", "SprPlayerLeftAttack", "SprPlayerRightAttack",
         "SprPlayerUpIdle", "SprPlayerDownIdle", "SprPlayerLeftIdle", "SprPlayerRightIdle",
-        "SprPlayerUpDodgeroll", "SprPlayerDownDodgeroll", "SprPlayerLeftDodgeroll", "SprPlayerRightDodgeroll"};
+        "SprPlayerUpDodgeroll", "SprPlayerDownDodgeroll", "SprPlayerLeftDodgeroll", "SprPlayerRightDodgeroll",
+        "SprPlayerRightHit", "SprPlayerLeftHit", "SprPlayerUpHit", "SprPlayerDownHit",
+        "SprPlayerDeath"};
         foreach (string name in animations)
         {
             if (name == spriteSelected)
@@ -79,114 +108,166 @@ public partial class Player : CharacterBody2D
     }
     public void physicsPlayer(double delta)
     {
-        Vector2 velocity = Vector2.Zero;
-        Vector2 direction = Input.GetVector("move_left", "move_right", "move_up", "move_down");
-        // Sprite2D walkUpSprite = GetNode<Sprite2D>(SprPlayerUpWalk);
-        var aniPlayerMoving = GetNode<AnimationPlayer>("walkAnimation");
+        if (health <= 0)
+        {
+            var deathAni = GetNode<AnimationPlayer>("deathAnimation");
+            deathAni.Play("deathAnimation");
+        }
+        else
+        {
+            Vector2 velocity = Vector2.Zero;
+            Vector2 direction = Input.GetVector("move_left", "move_right", "move_up", "move_down");
+            // Sprite2D walkUpSprite = GetNode<Sprite2D>(SprPlayerUpWalk);
+            var aniPlayerMoving = GetNode<AnimationPlayer>("walkAnimation");
+            var hitBoxArea = GetNode<Area2D>("hitBox");
+            _on_hit_box_area_entered(GetNode<Area2D>("hitBox"));
+            if (Input.IsActionJustPressed("Attack"))
+            {
+                isAttacking = true;
+                if (facingDirection == FacingDirection.up)
+                {
+                    attack("attackUp");
+                    hideAndShowAni("SprPlayerUpAttack");
+                }
+                else if (facingDirection == FacingDirection.down)
+                {
+                    attack("attackDown");
+                    hideAndShowAni("SprPlayerDownAttack");
+                }
+                else if (facingDirection == FacingDirection.left)
+                {
+                    attack("attackLeft");
+                    hideAndShowAni("SprPlayerLeftAttack");
+                }
+                else if (facingDirection == FacingDirection.right)
+                {
+                    attack("attackRight");
+                    hideAndShowAni("SprPlayerRightAttack");
+                }
+            }
+            else if (direction != Vector2.Zero)
+            {
+                if (direction.X > 0)
+                {
+                    // facingDirection = FacingDirection.right;
+                    if (Input.IsActionJustPressed("Dodge"))
+                    {
+                        // var dodgingDirection = facingDirection;
+                        isDodging = true;
+                        dodgeAttack("rightDodge");
+                        hideAndShowAni("SprPlayerRightDodgeroll");
+                    }
+                    else if (isDodging == false)
+                    {
+                        aniPlayerMoving.Play("walkRight");
+                        hideAndShowAni("SprPlayerRightWalk");
+                    }
+                }
+                else if (direction.X < 0)
+                {
+                    if (Input.IsActionJustPressed("Dodge"))
+                    {
+                        isDodging = true;
+                        dodgeAttack("leftDodge");
+                        hideAndShowAni("SprPlayerLeftDodgeroll");
+                    }
+                    else if (isDodging == false)
+                    {
+                        aniPlayerMoving.Play("walkLeft");
+                        hideAndShowAni("SprPlayerLeftWalk");
+                    }
 
-        if (Input.IsActionJustPressed("Attack"))
-        {
-            isAttacking = true;
-            if (facingDirection == FacingDirection.up)
-            {
-                attack("attackUp");
-                hideAndShowAni("SprPlayerUpAttack");
+                }
+                else if (direction.Y > 0)
+                {
+                    if (Input.IsActionJustPressed("Dodge"))
+                    {
+                        isDodging = true;
+                        dodgeAttack("downDodge");
+                        hideAndShowAni("SprPlayerDownDodgeroll");
+                    }
+                    else if (isDodging == false)
+                    {
+                        aniPlayerMoving.Play("down");
+                        hideAndShowAni("SprPlayerDownWalk");
+                    }
+                }
+                else if (direction.Y < 0)
+                {
+                    if (Input.IsActionJustPressed("Dodge"))
+                    {
+                        isDodging = true;
+                        dodgeAttack("upDodge");
+                        hideAndShowAni("SprPlayerUpDodgeroll");
+                    }
+                    else if (isDodging == false)
+                    {
+                        aniPlayerMoving.Play("up");
+                        hideAndShowAni("SprPlayerUpWalk");
+                    }
+                }
+                if (isDodging == true)
+                {
+                    velocity = direction.Normalized() * dodgeSpeed;
+                }
+                else velocity = direction.Normalized() * Speed;
             }
-            else if (facingDirection == FacingDirection.down)
+            else if (Input.IsActionJustPressed("Dodge"))
             {
-                attack("attackDown");
-                hideAndShowAni("SprPlayerDownAttack");
-            }
-            else if (facingDirection == FacingDirection.left)
-            {
-                attack("attackLeft");
-                hideAndShowAni("SprPlayerLeftAttack");
-            }
-            else if (facingDirection == FacingDirection.right)
-            {
-                attack("attackRight");
-                hideAndShowAni("SprPlayerRightAttack");
-            }
-        }
-        else if (direction != Vector2.Zero)
-        {
-            if (direction.X > 0)
-            {
-                aniPlayerMoving.Play("walkRight");
-                hideAndShowAni("SprPlayerRightWalk");
-            }
-            else if (direction.X < 0)
-            {
-                aniPlayerMoving.Play("walkLeft");
-                hideAndShowAni("SprPlayerLeftWalk");
-            }
-            else if (direction.Y > 0)
-            {
-                aniPlayerMoving.Play("down");
-                hideAndShowAni("SprPlayerDownWalk");
-            }
-            else if (direction.Y < 0)
-            {
-                aniPlayerMoving.Play("up");
-                hideAndShowAni("SprPlayerUpWalk");
-            }
-            velocity = direction.Normalized() * Speed;
-        }
-        else if (Input.IsActionJustPressed("Dodge"))
-        {
-            isDodging = true;
+                isDodging = true;
 
-            if (facingDirection == FacingDirection.right)
-            {
-                dodgeAttack("rightDodge");
-                hideAndShowAni("SprPlayerRightDodgeroll");
+                if (facingDirection == FacingDirection.right)
+                {
+                    dodgeAttack("rightDodge");
+                    hideAndShowAni("SprPlayerRightDodgeroll");
+                }
+                else if (facingDirection == FacingDirection.left)
+                {
+                    dodgeAttack("leftDodge");
+                    hideAndShowAni("SprPlayerLeftDodgeroll");
+                }
+                else if (facingDirection == FacingDirection.down)
+                {
+                    dodgeAttack("downDodge");
+                    hideAndShowAni("SprPlayerDownDodgeroll");
+                }
+                else if (facingDirection == FacingDirection.up)
+                {
+                    dodgeAttack("upDodge");
+                    hideAndShowAni("SprPlayerUpDodgeroll");
+                }
             }
-            else if (facingDirection == FacingDirection.left)
+            else if (velocity == Vector2.Zero && !isAttacking && !isDodging)
             {
-                dodgeAttack("leftDodge");
-                hideAndShowAni("SprPlayerLeftDodgeroll");
+                GD.Print(!isDodging);
+                if (facingDirection == FacingDirection.up)
+                {
+                    idlePlayer("idleUp");
+                    hideAndShowAni("SprPlayerUpIdle");
+                }
+                else if (facingDirection == FacingDirection.down)
+                {
+                    idlePlayer("idleDown");
+                    hideAndShowAni("SprPlayerDownIdle");
+                }
+                else if (facingDirection == FacingDirection.left)
+                {
+                    idlePlayer("idleLeft");
+                    hideAndShowAni("SprPlayerLeftIdle");
+                }
+                else if (facingDirection == FacingDirection.right)
+                {
+                    idlePlayer("idleRight");
+                    hideAndShowAni("SprPlayerRightIdle");
+                }
             }
-            else if (facingDirection == FacingDirection.down)
+            else if (!isAttacking && !isDodging)
             {
-                dodgeAttack("downDodge");
-                hideAndShowAni("SprPlayerDownDodgeroll");
+                aniPlayerMoving.Pause();
             }
-            else if (facingDirection == FacingDirection.up)
-            {
-                dodgeAttack("upDodge");
-                hideAndShowAni("SprPlayerUpDodgeroll");
-            }
-            velocity = direction.Normalized() * dodgeSpeed;
+            Velocity = velocity;
+            MoveAndSlide();
         }
-        else if (velocity == Vector2.Zero && !isAttacking && !isDodging)
-        {
-            if (facingDirection == FacingDirection.up)
-            {
-                idlePlayer("idleUp");
-                hideAndShowAni("SprPlayerUpIdle");
-            }
-            else if (facingDirection == FacingDirection.down)
-            {
-                idlePlayer("idleDown");
-                hideAndShowAni("SprPlayerDownIdle");
-            }
-            else if (facingDirection == FacingDirection.left)
-            {
-                idlePlayer("idleLeft");
-                hideAndShowAni("SprPlayerLeftIdle");
-            }
-            else if (facingDirection == FacingDirection.right)
-            {
-                idlePlayer("idleRight");
-                hideAndShowAni("SprPlayerRightIdle");
-            }
-        }
-        else if (!isAttacking && !isDodging)
-        {
-            aniPlayerMoving.Pause();
-        }
-        Velocity = velocity;
-        MoveAndSlide();
     }
     public override void _Process(double delta)
     {
