@@ -9,8 +9,10 @@ public partial class Player : CharacterBody2D
     public int Speed { get; set; } = 75; // How fast the player will move (pixels/sec).
     public int dodgeSpeed { get; set; } = 125;
     public int damage { get; private set; } = 1;
-    private int health = 5;
-    private int stamina = 5;
+    private double maxHealth = 100;
+    private double currentHealth = 5;
+    private double maxStamina = 100;
+    private double currentStamina = 5;
     public enum FacingDirection
     {
         up, down, left, right
@@ -19,7 +21,7 @@ public partial class Player : CharacterBody2D
     [Export] public bool isAttacking = false;
     [Export] public bool isDodging = false;
     public static Player instance;
-    Variant dodgingDirection;
+    // Variant dodgingDirection;
 
     public Vector2 ScreenSize;
 
@@ -27,6 +29,13 @@ public partial class Player : CharacterBody2D
     {
         ScreenSize = GetViewportRect().Size;
         instance = this;
+        idlePlayer("idleUp");
+        hideAndShowAni("SprPlayerUpIdle");
+        var healthBar = GetNode<ProgressBar>("healthBar");
+        var staminaBar = GetNode<ProgressBar>("staminaBar");
+        healthBar.MaxValue = maxHealth;
+        staminaBar.MaxValue = maxStamina;
+        isDodging = false;
     }
     public void attack(string attackName)
     {
@@ -42,7 +51,7 @@ public partial class Player : CharacterBody2D
     private void _on_hit_box_area_entered(Area2D col)
     {
         GD.Print("damage taken");
-        health--;
+        currentHealth--;
         if (facingDirection == FacingDirection.up)
         {
             hitTaken("SprPlayerUpHit");
@@ -67,11 +76,25 @@ public partial class Player : CharacterBody2D
     }
     public void hideSprite(string spriteName)
     {
-        GetNode<Sprite2D>(spriteName).Visible = false;
+        if (HasNode(spriteName))
+        {
+            GetNode<Sprite2D>(spriteName).Visible = false;
+        }
+        else
+        {
+            GD.PrintErr($"Node '{spriteName}' not found!");
+        }
     }
     public void showSprite(string spriteName)
     {
-        GetNode<Sprite2D>(spriteName).Visible = true;
+        if (HasNode(spriteName))
+        {
+            GetNode<Sprite2D>(spriteName).Visible = true;
+        }
+        else
+        {
+            GD.PrintErr($"Node '{spriteName}' not found!");
+        }
     }
     public void hideAndShowAni(string spriteSelected)
     {
@@ -108,21 +131,28 @@ public partial class Player : CharacterBody2D
     }
     public void physicsPlayer(double delta)
     {
-        if (health <= 0)
+        if (currentHealth <= 0)
         {
             var deathAni = GetNode<AnimationPlayer>("deathAnimation");
             deathAni.Play("deathAnimation");
         }
         else
         {
+            GD.Print(isDodging);
             Vector2 velocity = Vector2.Zero;
             Vector2 direction = Input.GetVector("move_left", "move_right", "move_up", "move_down");
-            // Sprite2D walkUpSprite = GetNode<Sprite2D>(SprPlayerUpWalk);
+            var healthBar = GetNode<ProgressBar>("healthBar");
+            var staminaBar = GetNode<ProgressBar>("staminaBar");            
             var aniPlayerMoving = GetNode<AnimationPlayer>("walkAnimation");
-            var hitBoxArea = GetNode<Area2D>("hitBox");
-            _on_hit_box_area_entered(GetNode<Area2D>("hitBox"));
+            // _on_hit_box_area_entered(GetNode<Area2D>("hitBox"));
             if (Input.IsActionJustPressed("Attack"))
             {
+                if (currentStamina < 25)
+                {
+                    GD.Print("Cant Attack");
+                }
+                else 
+                {
                 isAttacking = true;
                 if (facingDirection == FacingDirection.up)
                 {
@@ -144,7 +174,11 @@ public partial class Player : CharacterBody2D
                     attack("attackRight");
                     hideAndShowAni("SprPlayerRightAttack");
                 }
+                currentStamina -= 25;
+                staminaBar.Value = currentStamina;
+                }
             }
+
             else if (direction != Vector2.Zero)
             {
                 if (direction.X > 0)
@@ -175,6 +209,7 @@ public partial class Player : CharacterBody2D
                     {
                         aniPlayerMoving.Play("walkLeft");
                         hideAndShowAni("SprPlayerLeftWalk");
+                        // velocity = direction.Normalized() * Speed;
                     }
 
                 }
@@ -210,7 +245,7 @@ public partial class Player : CharacterBody2D
                 {
                     velocity = direction.Normalized() * dodgeSpeed;
                 }
-                else velocity = direction.Normalized() * Speed;
+                velocity = direction.Normalized() * Speed;
             }
             else if (Input.IsActionJustPressed("Dodge"))
             {
@@ -239,7 +274,6 @@ public partial class Player : CharacterBody2D
             }
             else if (velocity == Vector2.Zero && !isAttacking && !isDodging)
             {
-                GD.Print(!isDodging);
                 if (facingDirection == FacingDirection.up)
                 {
                     idlePlayer("idleUp");
@@ -267,6 +301,16 @@ public partial class Player : CharacterBody2D
             }
             Velocity = velocity;
             MoveAndSlide();
+            if (currentHealth < maxHealth)
+            {
+                currentHealth += 0.2;
+                healthBar.Value = currentHealth;
+            }
+            if (currentStamina < maxStamina)
+            {
+                currentStamina += 0.2;
+                staminaBar.Value = currentStamina;
+            }
         }
     }
     public override void _Process(double delta)

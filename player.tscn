@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-[gd_scene load_steps=60 format=3 uid="uid://btfbee3hv51oi"]
-=======
-[gd_scene load_steps=45 format=3 uid="uid://btfbee3hv51oi"]
->>>>>>> e4948abd69fbfcc0baabc99760fe33bb178db751
+[gd_scene load_steps=64 format=3 uid="uid://4g4gqc3kkn85"]
 
 [ext_resource type="Script" uid="uid://du10xhvdi1y3c" path="res://Player.cs" id="1_sweqy"]
 [ext_resource type="Texture2D" uid="uid://ducyd7i5mfoob" path="res://art/Pixelarium - Playable Character - Free Version/Pixelarium - Playable Character - Free Version/Pack Content/Back animations/spr_player_back_walk.png" id="3_hqtel"]
@@ -29,7 +25,7 @@
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_dw050"]
 radius = 13.0
-height = 28.0
+height = 42.0
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_u1c27"]
 size = Vector2(23, 21)
@@ -673,7 +669,7 @@ tracks/1/path = NodePath(".:isDodging")
 tracks/1/interp = 1
 tracks/1/loop_wrap = true
 tracks/1/keys = {
-"times": PackedFloat32Array(2.1),
+"times": PackedFloat32Array(2),
 "transitions": PackedFloat32Array(1),
 "update": 1,
 "values": [false]
@@ -701,7 +697,7 @@ tracks/1/path = NodePath(".:isDodging")
 tracks/1/interp = 1
 tracks/1/loop_wrap = true
 tracks/1/keys = {
-"times": PackedFloat32Array(2.1),
+"times": PackedFloat32Array(2.03333),
 "transitions": PackedFloat32Array(1),
 "update": 1,
 "values": [false]
@@ -729,7 +725,7 @@ tracks/1/path = NodePath(".:isDodging")
 tracks/1/interp = 1
 tracks/1/loop_wrap = true
 tracks/1/keys = {
-"times": PackedFloat32Array(2.1),
+"times": PackedFloat32Array(2.03333),
 "transitions": PackedFloat32Array(1),
 "update": 1,
 "values": [false]
@@ -757,7 +753,7 @@ tracks/1/path = NodePath(".:isDodging")
 tracks/1/interp = 1
 tracks/1/loop_wrap = true
 tracks/1/keys = {
-"times": PackedFloat32Array(1.8),
+"times": PackedFloat32Array(1.73333),
 "transitions": PackedFloat32Array(1),
 "update": 1,
 "values": [false]
@@ -1400,23 +1396,6 @@ _data = {
 &"idleUp": SubResource("Animation_q13i1")
 }
 
-<<<<<<< HEAD
-[sub_resource type="Animation" id="Animation_2wuci"]
-resource_name = "hitRight"
-length = 0.4
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath("SprPlayerRightHit:frame")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/keys = {
-"times": PackedFloat32Array(0, 0.0666667, 0.166667),
-"transitions": PackedFloat32Array(1, 1, 1),
-"update": 1,
-"values": [3, 2, 1]
-}
-
 [sub_resource type="Animation" id="Animation_iruf7"]
 length = 0.001
 tracks/0/type = "value"
@@ -1468,6 +1447,22 @@ tracks/3/keys = {
 "values": [0]
 }
 
+[sub_resource type="Animation" id="Animation_efrwb"]
+resource_name = "hitDown"
+length = 0.4
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("SprPlayerFrontHit:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.0666667, 0.166667, 0.266667),
+"transitions": PackedFloat32Array(1, 1, 1, 1),
+"update": 1,
+"values": [0, 1, 2, 3]
+}
+
 [sub_resource type="Animation" id="Animation_j5n4i"]
 resource_name = "hitLeft"
 length = 0.4
@@ -1482,6 +1477,22 @@ tracks/0/keys = {
 "transitions": PackedFloat32Array(1, 1, 1, 1),
 "update": 1,
 "values": [0, 2, 1, 3]
+}
+
+[sub_resource type="Animation" id="Animation_2wuci"]
+resource_name = "hitRight"
+length = 0.4
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("SprPlayerRightHit:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.0666667, 0.166667),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 1,
+"values": [3, 2, 1]
 }
 
 [sub_resource type="Animation" id="Animation_634y6"]
@@ -1500,22 +1511,6 @@ tracks/0/keys = {
 "values": [0, 1, 2, 3]
 }
 
-[sub_resource type="Animation" id="Animation_efrwb"]
-resource_name = "hitDown"
-length = 0.4
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath("SprPlayerFrontHit:frame")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/keys = {
-"times": PackedFloat32Array(0, 0.0666667, 0.166667, 0.266667),
-"transitions": PackedFloat32Array(1, 1, 1, 1),
-"update": 1,
-"values": [0, 1, 2, 3]
-}
-
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_hiqhm"]
 _data = {
 &"RESET": SubResource("Animation_iruf7"),
@@ -1523,21 +1518,6 @@ _data = {
 &"hitLeft": SubResource("Animation_j5n4i"),
 &"hitRight": SubResource("Animation_2wuci"),
 &"hitUp": SubResource("Animation_634y6")
-}
-
-[sub_resource type="Animation" id="Animation_hiqhm"]
-resource_name = "deathAnimation"
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath("SprPlayerDeath:frame")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/keys = {
-"times": PackedFloat32Array(0, 0.2, 0.3, 0.433333, 0.533333, 0.666667, 0.766667, 0.866667),
-"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1),
-"update": 1,
-"values": [0, 1, 2, 3, 4, 5, 6, 7]
 }
 
 [sub_resource type="Animation" id="Animation_tkwlq"]
@@ -1555,6 +1535,21 @@ tracks/0/keys = {
 "values": [0]
 }
 
+[sub_resource type="Animation" id="Animation_hiqhm"]
+resource_name = "deathAnimation"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("SprPlayerDeath:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.2, 0.3, 0.433333, 0.533333, 0.666667, 0.766667, 0.866667),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [0, 1, 2, 3, 4, 5, 6, 7]
+}
+
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_hl5qd"]
 _data = {
 &"RESET": SubResource("Animation_tkwlq"),
@@ -1564,15 +1559,25 @@ _data = {
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ek41f"]
 size = Vector2(29, 41)
 
-=======
->>>>>>> e4948abd69fbfcc0baabc99760fe33bb178db751
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_7ahtn"]
+bg_color = Color(0.176419, 0.176419, 0.176419, 0.32549)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_7lmhl"]
+bg_color = Color(0.870497, 0, 0.00616969, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_dx0e4"]
+bg_color = Color(0.273873, 0.273873, 0.273873, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_jm5j8"]
+bg_color = Color(0.243489, 0.467613, 0.0431248, 1)
+
 [node name="Player" type="CharacterBody2D"]
 script = ExtResource("1_sweqy")
 facingDirection = 2
 isDodging = true
 
 [node name="playerCollision" type="CollisionShape2D" parent="."]
-position = Vector2(-1, 6)
+position = Vector2(0, 3)
 shape = SubResource("CapsuleShape2D_dw050")
 
 [node name="attackAnimation" type="AnimationPlayer" parent="."]
@@ -1783,6 +1788,26 @@ hframes = 8
 [node name="hitBox" type="Area2D" parent="."]
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="hitBox"]
-position = Vector2(-0.5, 2.5)
+position = Vector2(-1, 3)
 shape = SubResource("RectangleShape2D_ek41f")
 debug_color = Color(0.901677, 0.295133, 0.250013, 0.42)
+
+[node name="healthBar" type="ProgressBar" parent="."]
+offset_left = -52.0
+offset_top = -51.0
+offset_right = 52.0
+offset_bottom = -41.0
+theme_override_styles/background = SubResource("StyleBoxFlat_7ahtn")
+theme_override_styles/fill = SubResource("StyleBoxFlat_7lmhl")
+max_value = 20.0
+show_percentage = false
+
+[node name="staminaBar" type="ProgressBar" parent="."]
+offset_left = -52.0
+offset_top = -41.0
+offset_right = 9.0
+offset_bottom = -31.0
+theme_override_styles/background = SubResource("StyleBoxFlat_dx0e4")
+theme_override_styles/fill = SubResource("StyleBoxFlat_jm5j8")
+max_value = 20.0
+show_percentage = false
