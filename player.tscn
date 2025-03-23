@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 [gd_scene load_steps=60 format=3 uid="uid://btfbee3hv51oi"]
+=======
+[gd_scene load_steps=45 format=3 uid="uid://btfbee3hv51oi"]
+>>>>>>> e4948abd69fbfcc0baabc99760fe33bb178db751
 
 [ext_resource type="Script" uid="uid://du10xhvdi1y3c" path="res://Player.cs" id="1_sweqy"]
 [ext_resource type="Texture2D" uid="uid://ducyd7i5mfoob" path="res://art/Pixelarium - Playable Character - Free Version/Pixelarium - Playable Character - Free Version/Pack Content/Back animations/spr_player_back_walk.png" id="3_hqtel"]
@@ -25,7 +29,7 @@
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_dw050"]
 radius = 13.0
-height = 42.0
+height = 28.0
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_u1c27"]
 size = Vector2(23, 21)
@@ -1396,6 +1400,7 @@ _data = {
 &"idleUp": SubResource("Animation_q13i1")
 }
 
+<<<<<<< HEAD
 [sub_resource type="Animation" id="Animation_2wuci"]
 resource_name = "hitRight"
 length = 0.4
@@ -1559,13 +1564,15 @@ _data = {
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ek41f"]
 size = Vector2(29, 41)
 
+=======
+>>>>>>> e4948abd69fbfcc0baabc99760fe33bb178db751
 [node name="Player" type="CharacterBody2D"]
 script = ExtResource("1_sweqy")
 facingDirection = 2
 isDodging = true
 
 [node name="playerCollision" type="CollisionShape2D" parent="."]
-position = Vector2(0, 3)
+position = Vector2(-1, 6)
 shape = SubResource("CapsuleShape2D_dw050")
 
 [node name="attackAnimation" type="AnimationPlayer" parent="."]
