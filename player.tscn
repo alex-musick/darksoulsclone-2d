@@ -1812,4 +1812,9 @@ theme_override_styles/fill = SubResource("StyleBoxFlat_jm5j8")
 max_value = 20.0
 show_percentage = false
 
+<<<<<<< HEAD
 [connection signal="area_entered" from="hitBox" to="." method="_on_hit_box_area_entered"]
+=======
+[node name="Camera2D" type="Camera2D" parent="."]
+zoom = Vector2(2.45, 2.45)
+>>>>>>> b6662e47b93fd2edab197712b90cbb470d25d088
