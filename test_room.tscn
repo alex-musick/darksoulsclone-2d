@@ -28,4 +28,4 @@ motion_mode = 1
 isDodging = true
 
 [node name="Node" parent="." instance=ExtResource("4_ju58f")]
-position = Vector2(799, 306)
+position = Vector2(524, 249)

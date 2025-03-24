@@ -22,8 +22,6 @@ public partial class AiMob : CharacterBody2D
 
 	// Nodes
 	private NavigationAgent2D _navAgent;
-	private RayCast2D _visionRay;
-	private RayCast2D _wallRay;
 	private AnimationPlayer _animPlayer;
 	private Node2D _player;
 
@@ -36,11 +34,17 @@ public partial class AiMob : CharacterBody2D
 	{
 		_currentHealth = MaxHealth;
 		_navAgent = GetNode<NavigationAgent2D>("NavAgent2D");
-		_visionRay = GetNode<RayCast2D>("VisionRay");
-		_wallRay = GetNode<RayCast2D>("WallRay");
 		_animPlayer = GetNode<AnimationPlayer>("AnimationPlayer");
 
-		_player = GetNode<CharacterBody2D>("/root/rooms/Player"); // Adjust path
+		_player = GetTree().GetFirstNodeInGroup("Player") as CharacterBody2D; // Adjust path
+
+		var hitbox = GetNode<Area2D>("Hitbox");
+		hitbox.BodyEntered += OnHitboxBodyEntered;
+		hitbox.BodyExited += OnHitboxBodyExited;
+
+		if (_player == null){
+			GD.Print("Player not found");
+		}
 
 		SetupNavigation();
 		StartPathUpdateTimer();
@@ -74,7 +78,6 @@ public partial class AiMob : CharacterBody2D
 	{
 		if (IsDead()) return;
 
-		UpdateVision();
 		UpdateState();
 		UpdateAnimation();
 
@@ -89,19 +92,6 @@ public partial class AiMob : CharacterBody2D
 				HandleAttack();
 				break;
 		}
-	}
-
-	private void UpdateVision()
-	{
-		if (_player == null) return;
-
-		Vector2 playerDirection = (_player.GlobalPosition - GlobalPosition).Normalized();
-		_visionRay.TargetPosition = playerDirection * VisionRange;
-		_visionRay.ForceRaycastUpdate();
-
-		_playerVisible = _visionRay.IsColliding() &&
-					   _visionRay.GetCollider() == _player &&
-					   !_wallRay.IsColliding();
 	}
 
 	private void UpdateState()
@@ -156,7 +146,7 @@ public partial class AiMob : CharacterBody2D
 		_attackCooldown = false;
 	}
 
-	private void UpdateAnimation()
+	private void  UpdateAnimation()
 	{
 		switch (_currentState)
 		{
@@ -205,19 +195,23 @@ public partial class AiMob : CharacterBody2D
 		return _currentState == State.Dead;
 	}
 
-	private void _on_Hitbox_body_entered(Node2D body)
+	private void OnHitboxBodyEntered(Node2D body)
 	{
-		if (body.Name == "Player" && _currentState == State.Attack)
+		GD.Print("Hitbox Body Entered: " + body.Name);
+		if (body.Name == "Player")
 		{
-			body.Call("TakeDamage", 10);
+			_playerVisible = true;
+			_currentState = State.Chase;
 		}
 	}
 
-	private void _on_Hurtbox_area_entered(Area2D area)
+	private void OnHitboxBodyExited(Node2D body)
 	{
-		if (area.IsInGroup("player_attack"))
+		
+		if (body.Name == "Player")
 		{
-			TakeDamage((int)area.Get("damage"));
+			_playerVisible = false;
+			_currentState = State.Idle;
 		}
 	}
 
