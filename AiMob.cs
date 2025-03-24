@@ -36,11 +36,14 @@ public partial class AiMob : CharacterBody2D
 		_navAgent = GetNode<NavigationAgent2D>("NavAgent2D");
 		_animPlayer = GetNode<AnimationPlayer>("AnimationPlayer");
 
-		_player = GetTree().GetFirstNodeInGroup("Player") as CharacterBody2D; // Adjust path
-
+		_player = GetNode<Node2D>("/root/Player");
+		
 		var hitbox = GetNode<Area2D>("Hitbox");
 		hitbox.BodyEntered += OnHitboxBodyEntered;
 		hitbox.BodyExited += OnHitboxBodyExited;
+		
+		var hurtbox = GetNode<Area2D>("Hurtbox");
+		hurtbox.AreaEntered += OnHurtboxAreaEntered;
 
 		if (_player == null){
 			GD.Print("Player not found");
@@ -207,7 +210,7 @@ public partial class AiMob : CharacterBody2D
 
 	private void OnHitboxBodyExited(Node2D body)
 	{
-		
+		GD.Print("Hitbox Body Exited: " + body.Name);
 		if (body.Name == "Player")
 		{
 			_playerVisible = false;
@@ -218,5 +221,13 @@ public partial class AiMob : CharacterBody2D
 	private void _on_DeathAnimation_finished()
 	{
 		QueueFree();
+	}
+	private void OnHurtboxAreaEntered(Area2D area)
+	{
+		if (area.IsInGroup("player_attack"))
+		{
+			int damage = (int)area.Get("damage"); 
+			TakeDamage(damage); 
+		}
 	}
 }

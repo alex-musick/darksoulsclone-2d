@@ -250,7 +250,7 @@ texture = ExtResource("6_q26fp")
 hframes = 4
 
 [node name="Hurtbox" type="Area2D" parent="."]
-visible = false
+collision_layer = 3
 collision_mask = 2
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Hurtbox"]
@@ -258,7 +258,7 @@ position = Vector2(0, -5)
 shape = SubResource("CapsuleShape2D_pqule")
 
 [node name="Hitbox" type="Area2D" parent="."]
-collision_layer = 2
+visible = false
 collision_mask = 2
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Hitbox"]
@@ -274,3 +274,7 @@ visible = false
 target_position = Vector2(48, 0)
 
 [node name="NavAgent2D" type="NavigationAgent2D" parent="."]
+
+[connection signal="area_entered" from="Hurtbox" to="." method="OnHurtboxAreaEntered"]
+[connection signal="area_entered" from="Hitbox" to="." method="OnHitboxBodyEntered"]
+[connection signal="area_exited" from="Hitbox" to="." method="OnHitboxBodyExited"]
