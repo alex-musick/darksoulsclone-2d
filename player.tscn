@@ -1811,3 +1811,5 @@ theme_override_styles/background = SubResource("StyleBoxFlat_dx0e4")
 theme_override_styles/fill = SubResource("StyleBoxFlat_jm5j8")
 max_value = 20.0
 show_percentage = false
+
+[connection signal="area_entered" from="hitBox" to="." method="_on_hit_box_area_entered"]
