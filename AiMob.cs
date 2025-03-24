@@ -24,6 +24,13 @@ public partial class AiMob : CharacterBody2D
 	private NavigationAgent2D _navAgent;
 	private AnimationPlayer _animPlayer;
 	private Node2D _player;
+	
+	//Sprites
+	private Sprite2D _idleSprite;
+	private Sprite2D _walkSprite;
+	private Sprite2D _attackSprite;
+	private Sprite2D _hurtSprite;
+	private Sprite2D _deadSprite;
 
 	// Internal Variables
 	private int _currentHealth;
@@ -32,11 +39,21 @@ public partial class AiMob : CharacterBody2D
 
 	public override void _Ready()
 	{
+		_idleSprite = GetNode<Sprite2D>("IdleSprite");
+	 	_walkSprite = GetNode<Sprite2D>("WalkSprite");
+	 	_attackSprite = GetNode<Sprite2D>("AttackSprite");
+	 	_hurtSprite = GetNode<Sprite2D>("HurtSprite");
+	 	_deadSprite = GetNode<Sprite2D>("DeathSprite");
+	
+	 	HideAllSprites();
+	 	_idleSprite.Visible = true;
 		_currentHealth = MaxHealth;
 		_navAgent = GetNode<NavigationAgent2D>("NavAgent2D");
 		_animPlayer = GetNode<AnimationPlayer>("AnimationPlayer");
+		
+		
 
-		_player = GetNode<Node2D>("/root/Player");
+		_player = GetNode<Node2D>("/root/TestRoom/Player");
 		
 		var hitbox = GetNode<Area2D>("Hitbox");
 		hitbox.BodyEntered += OnHitboxBodyEntered;
@@ -151,18 +168,33 @@ public partial class AiMob : CharacterBody2D
 
 	private void  UpdateAnimation()
 	{
+		HideAllSprites();
+		
 		switch (_currentState)
 		{
 			case State.Idle:
+				_idleSprite.Visible = true;
 				_animPlayer.Play("idle");
 				break;
 
 			case State.Chase:
+				_walkSprite.Visible = true;
 				_animPlayer.Play("walk");
 				break;
 
 			case State.Attack:
+				_attackSprite.Visible = true;
 				_animPlayer.Play("attack");
+				break;
+			
+			case State.Hurt:
+				_hurtSprite.Visible = true;
+				_animPlayer.Play("hurt");
+				break;
+			
+			case State.Dead:
+				_deadSprite.Visible = true;
+				_animPlayer.Play("dead");
 				break;
 		}
 	}
@@ -230,4 +262,13 @@ public partial class AiMob : CharacterBody2D
 			TakeDamage(damage); 
 		}
 	}
+	private void HideAllSprites()
+	{
+		_idleSprite.Visible = false;
+		_walkSprite.Visible = false;
+		_attackSprite.Visible = false;
+		_hurtSprite.Visible = false;
+		_deadSprite.Visible = false;
+	}
+	
 }
