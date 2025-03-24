@@ -40,7 +40,6 @@ public partial class Player : CharacterBody2D
     public void attack(string attackName)
     {
         var aniPlayer = GetNode<AnimationPlayer>("attackAnimation");
-
         aniPlayer.Play(attackName);
     }
     public void hitTaken(string hitName)
@@ -144,7 +143,6 @@ public partial class Player : CharacterBody2D
             var healthBar = GetNode<ProgressBar>("healthBar");
             var staminaBar = GetNode<ProgressBar>("staminaBar");            
             var aniPlayerMoving = GetNode<AnimationPlayer>("walkAnimation");
-            // _on_hit_box_area_entered(GetNode<Area2D>("hitBox"));
             if (Input.IsActionJustPressed("Attack"))
             {
                 if (currentStamina < 25)
