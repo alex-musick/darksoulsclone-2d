@@ -1811,3 +1811,6 @@ theme_override_styles/background = SubResource("StyleBoxFlat_dx0e4")
 theme_override_styles/fill = SubResource("StyleBoxFlat_jm5j8")
 max_value = 20.0
 show_percentage = false
+
+[node name="Camera2D" type="Camera2D" parent="."]
+zoom = Vector2(2.45, 2.45)
