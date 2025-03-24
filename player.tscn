@@ -1587,6 +1587,8 @@ libraries = {
 speed_scale = 2.5
 
 [node name="AttackBox" type="Area2D" parent="."]
+collision_layer = 2
+collision_mask = 2
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="AttackBox"]
 position = Vector2(23.5, -4.25)

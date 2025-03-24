@@ -71,7 +71,6 @@ public partial class Player : CharacterBody2D
             hitTaken("SprPlayerRightHit");
             hideAndShowAni("SprPlayerRightHit");
         }
-        
     }
     public void hideSprite(string spriteName)
     {
