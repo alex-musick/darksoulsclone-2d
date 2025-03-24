@@ -23,7 +23,7 @@ position = Vector2(440, 272)
 position = Vector2(440, 336)
 
 [node name="Player" parent="." instance=ExtResource("2_arrdh")]
-position = Vector2(584, 320)
+position = Vector2(583, 319)
 motion_mode = 1
 
 [node name="Node" parent="." instance=ExtResource("4_ju58f")]
