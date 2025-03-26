@@ -264,17 +264,24 @@ public partial class AiMob : CharacterBody2D
 	{
 		QueueFree();
 	}
-	private void OnHurtboxAreaEntered(Area2D area, Area2D col)
+	// private void OnHurtboxAreaEntered(Area2D area, Area2D col)
+	// {
+	// 	var healthBar = GetNode<ProgressBar>("healthBar");
+
+	// 	if (area.IsInGroup("player_attack"))
+	// 	{
+	// 		// int damage = (int)area.Get("damage"); 
+	// 		TakeDamage(damage); 
+			
+	// 		healthBar.Value = _currentHealth;
+	// 	}
+	// }
+	private void OnHurtboxAreaEntered(Area2D col)
 	{
 		var healthBar = GetNode<ProgressBar>("healthBar");
-
-		if (area.IsInGroup("player_attack"))
-		{
-			// int damage = (int)area.Get("damage"); 
-			TakeDamage(damage); 
-			
-			healthBar.Value = _currentHealth;
-		}
+		TakeDamage(damage); 
+		healthBar.Value = _currentHealth;
+		
 	}
 	private void HideAllSprites()
 	{
