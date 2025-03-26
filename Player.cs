@@ -12,7 +12,7 @@ public partial class Player : CharacterBody2D
     [Export]
     public int Speed { get; set; } = 75; // How fast the player will move (pixels/sec).
     public int dodgeSpeed { get; set; } = 125;
-    public int damage { get; private set; } = 100;
+    public int damage { get; private set; } = 50;
     private double maxHealth = 100;
     private double currentHealth = 5;
     private double maxStamina = 100;
@@ -53,8 +53,8 @@ public partial class Player : CharacterBody2D
     }
     private void _on_hit_box_area_entered(Area2D col)
     {
-        GD.Print("damage taken");
-        currentHealth--;
+        
+        currentHealth -= AiMob.instance.damage;
         if (facingDirection == FacingDirection.up)
         {
             hitTaken("SprPlayerUpHit");

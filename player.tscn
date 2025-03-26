@@ -1049,7 +1049,7 @@ tracks/22/keys = {
 tracks/23/type = "value"
 tracks/23/imported = false
 tracks/23/enabled = true
-tracks/23/path = NodePath("SprPlayerFrontHit:visible")
+tracks/23/path = NodePath("SprPlayerDownHit:visible")
 tracks/23/interp = 1
 tracks/23/loop_wrap = true
 tracks/23/keys = {
@@ -1365,7 +1365,7 @@ tracks/19/keys = {
 tracks/20/type = "value"
 tracks/20/imported = false
 tracks/20/enabled = true
-tracks/20/path = NodePath("SprPlayerFrontHit:visible")
+tracks/20/path = NodePath("SprPlayerDownHit:visible")
 tracks/20/interp = 1
 tracks/20/loop_wrap = true
 tracks/20/keys = {
@@ -1437,7 +1437,7 @@ tracks/2/keys = {
 tracks/3/type = "value"
 tracks/3/imported = false
 tracks/3/enabled = true
-tracks/3/path = NodePath("SprPlayerFrontHit:frame")
+tracks/3/path = NodePath("SprPlayerDownHit:frame")
 tracks/3/interp = 1
 tracks/3/loop_wrap = true
 tracks/3/keys = {
@@ -1453,7 +1453,7 @@ length = 0.4
 tracks/0/type = "value"
 tracks/0/imported = false
 tracks/0/enabled = true
-tracks/0/path = NodePath("SprPlayerFrontHit:frame")
+tracks/0/path = NodePath("SprPlayerDownHit:frame")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/keys = {
@@ -1587,6 +1587,7 @@ libraries = {
 speed_scale = 2.5
 
 [node name="AttackBox" type="Area2D" parent="."]
+collision_layer = 2
 collision_mask = 2
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="AttackBox"]
@@ -1753,6 +1754,7 @@ libraries = {
 
 [node name="SprPlayerRightHit" type="Sprite2D" parent="."]
 visible = false
+texture_filter = 1
 position = Vector2(1, 1)
 scale = Vector2(1.84375, 1.6875)
 texture = ExtResource("18_5tmop")
@@ -1760,6 +1762,7 @@ hframes = 4
 
 [node name="SprPlayerLeftHit" type="Sprite2D" parent="."]
 visible = false
+texture_filter = 1
 position = Vector2(0, 1)
 scale = Vector2(1.82813, 1.75)
 texture = ExtResource("19_7ahtn")
@@ -1767,13 +1770,15 @@ hframes = 4
 
 [node name="SprPlayerUpHit" type="Sprite2D" parent="."]
 visible = false
+texture_filter = 1
 position = Vector2(9.09495e-13, 1)
 scale = Vector2(1.89063, 1.73438)
 texture = ExtResource("20_7lmhl")
 hframes = 4
 
-[node name="SprPlayerFrontHit" type="Sprite2D" parent="."]
+[node name="SprPlayerDownHit" type="Sprite2D" parent="."]
 visible = false
+texture_filter = 1
 position = Vector2(1.52588e-05, 0.999992)
 scale = Vector2(1.85938, 1.71875)
 texture = ExtResource("21_dx0e4")
@@ -1781,6 +1786,7 @@ hframes = 4
 
 [node name="SprPlayerDeath" type="Sprite2D" parent="."]
 visible = false
+texture_filter = 1
 position = Vector2(1.00002, 3.8147e-06)
 scale = Vector2(1.85938, 1.71875)
 texture = ExtResource("22_7ahtn")

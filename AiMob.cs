@@ -32,14 +32,16 @@ public partial class AiMob : CharacterBody2D
 	private Sprite2D _attackSprite;
 	private Sprite2D _hurtSprite;
 	private Sprite2D _deadSprite;
-
+	public int damage { get; private set; } = 20;
 	// Internal Variables
 	private double _currentHealth = 5;
 	private bool _playerVisible;
 	private bool _attackCooldown;
+	public static AiMob instance;
 
 	public override void _Ready()
 	{
+		instance = this;
 		_idleSprite = GetNode<Sprite2D>("IdleSprite");
 	 	_walkSprite = GetNode<Sprite2D>("WalkSprite");
 	 	_attackSprite = GetNode<Sprite2D>("AttackSprite");
@@ -61,7 +63,7 @@ public partial class AiMob : CharacterBody2D
 		hitbox.BodyExited += OnHitboxBodyExited;
 		
 		var hurtbox = GetNode<Area2D>("Hurtbox");
-		hurtbox.AreaEntered += OnHurtboxAreaEntered;
+		// hurtbox.AreaEntered += OnHurtboxAreaEntered;
 
 		if (_player == null){
 			GD.Print("Player not found");
@@ -212,7 +214,7 @@ public partial class AiMob : CharacterBody2D
 	{
 		if (IsDead()) return;
 
-		_currentHealth -= damage;
+		_currentHealth -= Player.instance.damage;
 
 		if (_currentHealth <= 0)
 		{
@@ -262,15 +264,15 @@ public partial class AiMob : CharacterBody2D
 	{
 		QueueFree();
 	}
-	private void OnHurtboxAreaEntered(Area2D area)
+	private void OnHurtboxAreaEntered(Area2D area, Area2D col)
 	{
 		var healthBar = GetNode<ProgressBar>("healthBar");
 
 		if (area.IsInGroup("player_attack"))
 		{
 			// int damage = (int)area.Get("damage"); 
-			// TakeDamage(damage); 
-			_currentHealth -= Player.instance.damage;
+			TakeDamage(damage); 
+			
 			healthBar.Value = _currentHealth;
 		}
 	}
