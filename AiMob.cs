@@ -15,10 +15,11 @@ public partial class AiMob : CharacterBody2D
 	private State _currentState = State.Idle;
 
 	// Exported Properties
-	[Export] public int MaxHealth = 100;
+	[Export] public double MaxHealth = 100;
 	[Export] public float MoveSpeed = 150f;
 	[Export] public float AttackRange = 50f;
 	[Export] public float VisionRange = 300f;
+	// private double currentHealth = 0;
 
 	// Nodes
 	private NavigationAgent2D _navAgent;
@@ -33,7 +34,7 @@ public partial class AiMob : CharacterBody2D
 	private Sprite2D _deadSprite;
 
 	// Internal Variables
-	private int _currentHealth;
+	private double _currentHealth = 5;
 	private bool _playerVisible;
 	private bool _attackCooldown;
 
@@ -47,7 +48,7 @@ public partial class AiMob : CharacterBody2D
 	
 	 	HideAllSprites();
 	 	_idleSprite.Visible = true;
-		_currentHealth = MaxHealth;
+		// _currentHealth = MaxHealth;
 		_navAgent = GetNode<NavigationAgent2D>("NavAgent2D");
 		_animPlayer = GetNode<AnimationPlayer>("AnimationPlayer");
 		
@@ -96,10 +97,17 @@ public partial class AiMob : CharacterBody2D
 
 	public override void _PhysicsProcess(double delta)
 	{
+		var healthBar = GetNode<ProgressBar>("healthBar");
 		if (IsDead()) return;
 
 		UpdateState();
 		UpdateAnimation();
+
+		if (_currentHealth < MaxHealth)
+            {
+                _currentHealth += 0.2;
+                healthBar.Value = _currentHealth;
+            }
 
 		switch (_currentState)
 		{
@@ -112,6 +120,7 @@ public partial class AiMob : CharacterBody2D
 				HandleAttack();
 				break;
 		}
+		
 	}
 
 	private void UpdateState()
@@ -255,10 +264,14 @@ public partial class AiMob : CharacterBody2D
 	}
 	private void OnHurtboxAreaEntered(Area2D area)
 	{
+		var healthBar = GetNode<ProgressBar>("healthBar");
+
 		if (area.IsInGroup("player_attack"))
 		{
-			int damage = (int)area.Get("damage"); 
-			TakeDamage(damage); 
+			// int damage = (int)area.Get("damage"); 
+			// TakeDamage(damage); 
+			_currentHealth -= Player.instance.damage;
+			healthBar.Value = _currentHealth;
 		}
 	}
 	private void HideAllSprites()
