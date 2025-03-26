@@ -5,10 +5,14 @@ using System.Dynamic;
 
 public partial class Player : CharacterBody2D
 {
+    // make healing input
+    // fix hitbox, attack, and mob hitbox
+    // make sure death stays dead
+    // 
     [Export]
     public int Speed { get; set; } = 75; // How fast the player will move (pixels/sec).
     public int dodgeSpeed { get; set; } = 125;
-    public int damage { get; private set; } = 1;
+    public int damage { get; private set; } = 100;
     private double maxHealth = 100;
     private double currentHealth = 5;
     private double maxStamina = 100;

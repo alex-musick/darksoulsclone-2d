@@ -207,7 +207,6 @@ public partial class AiMob : CharacterBody2D
 			_currentState = State.Chase;
 		}
 	}
-
 	private void OnHitboxBodyExited(Node2D body)
 	{
 		GD.Print("Hitbox Body Exited: " + body.Name);

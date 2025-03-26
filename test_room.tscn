@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://hgqcnmsnswpm" path="res://TestRoom.cs" id="1_oqbmf"]
 [ext_resource type="PackedScene" uid="uid://4g4gqc3kkn85" path="res://player.tscn" id="2_arrdh"]
-[ext_resource type="PackedScene" path="res://wall.tscn" id="3_arrdh"]
+[ext_resource type="PackedScene" uid="uid://b85vvmhwawtv4" path="res://wall.tscn" id="3_arrdh"]
 [ext_resource type="PackedScene" uid="uid://bt5uohm54j7jg" path="res://ai_mob.tscn" id="4_ju58f"]
 
 [node name="TestRoom" type="Node2D"]
