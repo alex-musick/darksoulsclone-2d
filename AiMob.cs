@@ -38,6 +38,7 @@ public partial class AiMob : CharacterBody2D
 	private bool _playerVisible;
 	private bool _attackCooldown;
 	public static AiMob instance;
+	private Area2D _attackBox;
 
 	public override void _Ready()
 	{
@@ -57,10 +58,11 @@ public partial class AiMob : CharacterBody2D
 		
 
 		_player = GetNode<Node2D>("/root/TestRoom/Player");
+		_attackBox = GetNode<Area2D>("attackBox");
 		
-		var hitbox = GetNode<Area2D>("Hitbox");
-		hitbox.BodyEntered += OnHitboxBodyEntered;
-		hitbox.BodyExited += OnHitboxBodyExited;
+		var detectionArea = GetNode<Area2D>("DetectionArea");
+		detectionArea.BodyEntered += OnDetectionAreaBodyEntered;
+		detectionArea.BodyExited += OnDetectionAreaBodyExited;
 		
 		var hurtbox = GetNode<Area2D>("Hurtbox");
 		// hurtbox.AreaEntered += OnHurtboxAreaEntered;
@@ -169,7 +171,9 @@ public partial class AiMob : CharacterBody2D
 
 		_attackCooldown = true;
 		_animPlayer.Play("attack");
+		_attackBox.Monitoring = true;
 		await ToSignal(_animPlayer, "animation_finished");
+		_attackBox.Monitoring = false;
 		_attackCooldown = false;
 	}
 
@@ -217,7 +221,7 @@ public partial class AiMob : CharacterBody2D
 			SetState(State.Dead);
 			_animPlayer.Play("death");
 			GetNode<CollisionShape2D>("CollisionShape2D").SetDeferred("disabled", true);
-			GetNode<Area2D>("Hitbox").Monitoring = false;
+			GetNode<Area2D>("attackBox").Monitoring = false;
 		}
 		else
 		{
@@ -237,18 +241,18 @@ public partial class AiMob : CharacterBody2D
 		return _currentState == State.Dead;
 	}
 
-	private void OnHitboxBodyEntered(Node2D body)
+	private void OnDetectionAreaBodyEntered(Node2D body)
 	{
-		GD.Print("Hitbox Body Entered: " + body.Name);
+		GD.Print("DetectionArea Body Entered: " + body.Name);
 		if (body.Name == "Player")
 		{
 			_playerVisible = true;
 			_currentState = State.Chase;
 		}
 	}
-	private void OnHitboxBodyExited(Node2D body)
+	private void OnDetectionAreaBodyExited(Node2D body)
 	{
-		GD.Print("Hitbox Body Exited: " + body.Name);
+		GD.Print("DetectionArea Body Exited: " + body.Name);
 		if (body.Name == "Player")
 		{
 			_playerVisible = false;
@@ -260,18 +264,7 @@ public partial class AiMob : CharacterBody2D
 	{
 		QueueFree();
 	}
-	// private void OnHurtboxAreaEntered(Area2D area, Area2D col)
-	// {
-	// 	var healthBar = GetNode<ProgressBar>("healthBar");
-
-	// 	if (area.IsInGroup("player_attack"))
-	// 	{
-	// 		// int damage = (int)area.Get("damage"); 
-	// 		TakeDamage(damage); 
-			
-	// 		healthBar.Value = _currentHealth;
-	// 	}
-	// }
+	
 	private void OnHurtboxAreaEntered(Area2D col)
 	{
 		var healthBar = GetNode<ProgressBar>("healthBar");
@@ -279,6 +272,7 @@ public partial class AiMob : CharacterBody2D
 		healthBar.Value = _currentHealth;
 		
 	}
+	
 	private void HideAllSprites()
 	{
 		_idleSprite.Visible = false;
