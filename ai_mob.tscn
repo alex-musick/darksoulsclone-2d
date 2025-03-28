@@ -36,7 +36,7 @@ tracks/1/keys = {
 tracks/2/type = "value"
 tracks/2/imported = false
 tracks/2/enabled = true
-tracks/2/path = NodePath("Hitbox:disable_mode")
+tracks/2/path = NodePath("HitBox:disable_mode")
 tracks/2/interp = 1
 tracks/2/loop_wrap = true
 tracks/2/keys = {
@@ -101,7 +101,7 @@ tracks/0/keys = {
 tracks/1/type = "value"
 tracks/1/imported = false
 tracks/1/enabled = true
-tracks/1/path = NodePath("Hitbox:disable_mode")
+tracks/1/path = NodePath("HitBox:disable_mode")
 tracks/1/interp = 1
 tracks/1/loop_wrap = true
 tracks/1/keys = {
@@ -261,10 +261,10 @@ collision_mask = 2
 position = Vector2(0, -5)
 shape = SubResource("CapsuleShape2D_pqule")
 
-[node name="Hitbox" type="Area2D" parent="."]
+[node name="HitBox" type="Area2D" parent="."]
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Hitbox"]
-position = Vector2(-1, 0)
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HitBox"]
+position = Vector2(-1, -1)
 shape = SubResource("CircleShape2D_6l3xq")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
@@ -289,5 +289,5 @@ value = 20.0
 show_percentage = false
 
 [connection signal="area_entered" from="Hurtbox" to="." method="OnHurtboxAreaEntered"]
-[connection signal="area_entered" from="Hitbox" to="." method="OnHitboxBodyEntered"]
-[connection signal="area_exited" from="Hitbox" to="." method="OnHitboxBodyExited"]
+[connection signal="area_entered" from="HitBox" to="." method="OnHitboxBodyEntered"]
+[connection signal="area_exited" from="HitBox" to="." method="OnHitboxBodyExited"]
