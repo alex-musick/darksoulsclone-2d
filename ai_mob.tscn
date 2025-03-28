@@ -1,4 +1,4 @@
-[gd_scene load_steps=19 format=3 uid="uid://bt5uohm54j7jg"]
+[gd_scene load_steps=20 format=3 uid="uid://bt5uohm54j7jg"]
 
 [ext_resource type="Script" uid="uid://b2ica2yywx3vc" path="res://AiMob.cs" id="1_pqule"]
 [ext_resource type="Texture2D" uid="uid://bc6mmff1vgl5s" path="res://art/EnemyAssets/Golbin/Green goblin/spr_goblin_walk.png" id="2_pqule"]
@@ -6,6 +6,8 @@
 [ext_resource type="Texture2D" uid="uid://dprocnpqlxrhx" path="res://art/EnemyAssets/Golbin/Green goblin/spr_goblin_death.png" id="4_0ob2f"]
 [ext_resource type="Texture2D" uid="uid://cypkf6gxcyerr" path="res://art/EnemyAssets/Golbin/Green goblin/spr_goblin_idle.png" id="5_mkv61"]
 [ext_resource type="Texture2D" uid="uid://cnjwgygkgv5q6" path="res://art/EnemyAssets/Golbin/Green goblin/spr_goblin_hurt.png" id="6_q26fp"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_pqule"]
 
 [sub_resource type="Animation" id="Animation_6l3xq"]
 length = 0.001
@@ -36,7 +38,7 @@ tracks/1/keys = {
 tracks/2/type = "value"
 tracks/2/imported = false
 tracks/2/enabled = true
-tracks/2/path = NodePath("HitBox:disable_mode")
+tracks/2/path = NodePath("DetectionArea:disable_mode")
 tracks/2/interp = 1
 tracks/2/loop_wrap = true
 tracks/2/keys = {
@@ -81,6 +83,30 @@ tracks/5/keys = {
 "update": 1,
 "values": [0]
 }
+tracks/6/type = "value"
+tracks/6/imported = false
+tracks/6/enabled = true
+tracks/6/path = NodePath("attackBox/CollisionShape2D:position")
+tracks/6/interp = 1
+tracks/6/loop_wrap = true
+tracks/6/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(-25, -7)]
+}
+tracks/7/type = "value"
+tracks/7/imported = false
+tracks/7/enabled = true
+tracks/7/path = NodePath("attackBox/CollisionShape2D:shape")
+tracks/7/interp = 1
+tracks/7/loop_wrap = true
+tracks/7/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [SubResource("RectangleShape2D_pqule")]
+}
 
 [sub_resource type="Animation" id="Animation_dej36"]
 resource_name = "attack"
@@ -101,7 +127,7 @@ tracks/0/keys = {
 tracks/1/type = "value"
 tracks/1/imported = false
 tracks/1/enabled = true
-tracks/1/path = NodePath("HitBox:disable_mode")
+tracks/1/path = NodePath("DetectionArea:disable_mode")
 tracks/1/interp = 1
 tracks/1/loop_wrap = true
 tracks/1/keys = {
@@ -109,6 +135,30 @@ tracks/1/keys = {
 "transitions": PackedFloat32Array(1),
 "update": 1,
 "values": [0]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("attackBox/CollisionShape2D:position")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0.0135061, 0.104855, 0.203938, 0.304945, 0.410761, 0.503111, 0.60027, 0.612775, 0.625281, 0.634901, 0.648368, 0.660461, 0.680474, 0.700646, 0.761002, 0.829219, 0.907138, 0.949465, 0.996602, 1.04566, 1.07837, 1.10027, 1.20032, 1.30102),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+"update": 0,
+"values": [Vector2(-25, -7), Vector2(-21, -7), Vector2(-26, -10), Vector2(-26, -22), Vector2(-25, -23), Vector2(-25, -19), Vector2(-34, 5), Vector2(-25, 25), Vector2(-5, 37), Vector2(15, 32), Vector2(32, 20), Vector2(40, 6), Vector2(37, -11), Vector2(35.2939, -10.8899), Vector2(37, -14), Vector2(35, -15), Vector2(34, -14), Vector2(36, -16), Vector2(33, -11), Vector2(34, -11), Vector2(30, -14), Vector2(-20, 6), Vector2(-26, 1), Vector2(-21, -5)]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("attackBox/CollisionShape2D:shape")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(1.10027),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [SubResource("RectangleShape2D_pqule")]
 }
 
 [sub_resource type="Animation" id="Animation_q26fp"]
@@ -194,7 +244,7 @@ radius = 13.0
 height = 36.0
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_6l3xq"]
-radius = 51.1566
+radius = 68.0
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_0s1ad"]
 radius = 15.0
@@ -217,6 +267,7 @@ libraries = {
 speed_scale = 0.6
 
 [node name="WalkSprite" type="Sprite2D" parent="."]
+visible = false
 texture_filter = 1
 position = Vector2(0, 1)
 scale = Vector2(1.90625, 1.81629)
@@ -232,6 +283,7 @@ texture = ExtResource("3_dej36")
 hframes = 14
 
 [node name="DeathSprite" type="Sprite2D" parent="."]
+visible = false
 texture_filter = 1
 position = Vector2(0, -5.72205e-06)
 scale = Vector2(1.90625, 1.81629)
@@ -239,6 +291,7 @@ texture = ExtResource("4_0ob2f")
 hframes = 8
 
 [node name="IdleSprite" type="Sprite2D" parent="."]
+visible = false
 texture_filter = 1
 position = Vector2(0, -5.72205e-06)
 scale = Vector2(1.90625, 1.81629)
@@ -246,6 +299,7 @@ texture = ExtResource("5_mkv61")
 hframes = 9
 
 [node name="HurtSprite" type="Sprite2D" parent="."]
+visible = false
 texture_filter = 1
 position = Vector2(0, -5.72205e-06)
 scale = Vector2(1.90625, 1.81629)
@@ -253,6 +307,7 @@ texture = ExtResource("6_q26fp")
 hframes = 4
 
 [node name="Hurtbox" type="Area2D" parent="."]
+visible = false
 light_mask = 2
 collision_layer = 2
 collision_mask = 2
@@ -261,9 +316,12 @@ collision_mask = 2
 position = Vector2(0, -5)
 shape = SubResource("CapsuleShape2D_pqule")
 
-[node name="HitBox" type="Area2D" parent="."]
+[node name="DetectionArea" type="Area2D" parent="."]
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="HitBox"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="DetectionArea"]
+visible = false
+light_mask = 8
+visibility_layer = 8
 position = Vector2(-1, -1)
 shape = SubResource("CircleShape2D_6l3xq")
 
@@ -288,6 +346,14 @@ theme_override_styles/fill = SubResource("StyleBoxFlat_dej36")
 value = 20.0
 show_percentage = false
 
+[node name="attackBox" type="Area2D" parent="."]
+position = Vector2(-1, -1)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="attackBox"]
+position = Vector2(-25, -7)
+shape = SubResource("RectangleShape2D_pqule")
+debug_color = Color(1, 0, 0, 0.419608)
+
 [connection signal="area_entered" from="Hurtbox" to="." method="OnHurtboxAreaEntered"]
-[connection signal="area_entered" from="HitBox" to="." method="OnHitboxBodyEntered"]
-[connection signal="area_exited" from="HitBox" to="." method="OnHitboxBodyExited"]
+[connection signal="area_entered" from="DetectionArea" to="." method="OnDetectionAreaBodyEntered"]
+[connection signal="area_exited" from="DetectionArea" to="." method="OnDetectionAreaBodyExited"]

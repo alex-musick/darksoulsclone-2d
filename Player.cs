@@ -7,8 +7,8 @@ public partial class Player : CharacterBody2D
 {
     // make sure death stays dead
     [Export]
-    public int Speed { get; set; } = 60; // How fast the player will move (pixels/sec).
-    public int dodgeSpeed { get; set; } = 100;
+    public int Speed { get; set; } = 75; // How fast the player will move (pixels/sec).
+    public int dodgeSpeed { get; set; } = 200;
     public int damage { get; private set; } = 50;
     private double maxHealth = 100;
     private double currentHealth = 5;
@@ -152,7 +152,7 @@ public partial class Player : CharacterBody2D
         }
         else
         {
-            GD.Print(isDodging);
+            // GD.Print(isDodging);
             Vector2 velocity = Vector2.Zero;
             Vector2 direction = Input.GetVector("move_left", "move_right", "move_up", "move_down");
             var healthBar = GetNode<ProgressBar>("healthBar");
