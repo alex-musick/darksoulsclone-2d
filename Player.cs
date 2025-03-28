@@ -7,8 +7,8 @@ public partial class Player : CharacterBody2D
 {
     // make sure death stays dead
     [Export]
-    public int Speed { get; set; } = 75; // How fast the player will move (pixels/sec).
-    public int dodgeSpeed { get; set; } = 200;
+    public int Speed { get; set; } = 60; // How fast the player will move (pixels/sec).
+    public int dodgeSpeed { get; set; } = 100;
     public int damage { get; private set; } = 50;
     private double maxHealth = 100;
     private double currentHealth = 5;
@@ -35,6 +35,7 @@ public partial class Player : CharacterBody2D
         var healthBar = GetNode<ProgressBar>("healthBar");
         var staminaBar = GetNode<ProgressBar>("staminaBar");
         healthBar.MaxValue = maxHealth;
+        healthBar.Value = maxHealth;
         staminaBar.MaxValue = maxStamina;
         isDodging = false;
     }
@@ -257,7 +258,10 @@ public partial class Player : CharacterBody2D
                 {
                     velocity = direction.Normalized() * dodgeSpeed;
                 }
-                velocity = direction.Normalized() * Speed;
+                else if (isDodging == false)
+                {
+                    velocity = direction.Normalized() * Speed;
+                }
             }
             else if (Input.IsActionJustPressed("Dodge"))
             {
