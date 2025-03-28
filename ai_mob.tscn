@@ -1,4 +1,4 @@
-[gd_scene load_steps=17 format=3 uid="uid://bt5uohm54j7jg"]
+[gd_scene load_steps=19 format=3 uid="uid://bt5uohm54j7jg"]
 
 [ext_resource type="Script" uid="uid://b2ica2yywx3vc" path="res://AiMob.cs" id="1_pqule"]
 [ext_resource type="Texture2D" uid="uid://bc6mmff1vgl5s" path="res://art/EnemyAssets/Golbin/Green goblin/spr_goblin_walk.png" id="2_pqule"]
@@ -36,7 +36,7 @@ tracks/1/keys = {
 tracks/2/type = "value"
 tracks/2/imported = false
 tracks/2/enabled = true
-tracks/2/path = NodePath("Hitbox:disable_mode")
+tracks/2/path = NodePath("HitBox:disable_mode")
 tracks/2/interp = 1
 tracks/2/loop_wrap = true
 tracks/2/keys = {
@@ -101,7 +101,7 @@ tracks/0/keys = {
 tracks/1/type = "value"
 tracks/1/imported = false
 tracks/1/enabled = true
-tracks/1/path = NodePath("Hitbox:disable_mode")
+tracks/1/path = NodePath("HitBox:disable_mode")
 tracks/1/interp = 1
 tracks/1/loop_wrap = true
 tracks/1/keys = {
@@ -200,6 +200,12 @@ radius = 51.1566
 radius = 15.0
 height = 50.0
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_pqule"]
+bg_color = Color(0.172833, 0.172833, 0.172833, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_dej36"]
+bg_color = Color(0.781833, 0.16796, 0.0786523, 1)
+
 [node name="AiMob" type="CharacterBody2D"]
 position = Vector2(87, 66)
 script = ExtResource("1_pqule")
@@ -247,17 +253,18 @@ texture = ExtResource("6_q26fp")
 hframes = 4
 
 [node name="Hurtbox" type="Area2D" parent="."]
-collision_layer = 3
+light_mask = 2
+collision_layer = 2
 collision_mask = 2
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Hurtbox"]
 position = Vector2(0, -5)
 shape = SubResource("CapsuleShape2D_pqule")
 
-[node name="Hitbox" type="Area2D" parent="."]
-collision_mask = 2
+[node name="HitBox" type="Area2D" parent="."]
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Hitbox"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HitBox"]
+position = Vector2(-1, 0)
 shape = SubResource("CircleShape2D_6l3xq")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
@@ -271,6 +278,16 @@ target_position = Vector2(48, 0)
 
 [node name="NavAgent2D" type="NavigationAgent2D" parent="."]
 
+[node name="healthBar" type="ProgressBar" parent="."]
+offset_left = -36.0
+offset_top = -52.0
+offset_right = 39.0
+offset_bottom = -38.0
+theme_override_styles/background = SubResource("StyleBoxFlat_pqule")
+theme_override_styles/fill = SubResource("StyleBoxFlat_dej36")
+value = 20.0
+show_percentage = false
+
 [connection signal="area_entered" from="Hurtbox" to="." method="OnHurtboxAreaEntered"]
-[connection signal="area_entered" from="Hitbox" to="." method="OnHitboxBodyEntered"]
-[connection signal="area_exited" from="Hitbox" to="." method="OnHitboxBodyExited"]
+[connection signal="area_entered" from="HitBox" to="." method="OnHitboxBodyEntered"]
+[connection signal="area_exited" from="HitBox" to="." method="OnHitboxBodyExited"]

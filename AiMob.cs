@@ -15,10 +15,11 @@ public partial class AiMob : CharacterBody2D
 	private State _currentState = State.Idle;
 
 	// Exported Properties
-	[Export] public int MaxHealth = 100;
+	[Export] public double MaxHealth = 100;
 	[Export] public float MoveSpeed = 150f;
 	[Export] public float AttackRange = 50f;
 	[Export] public float VisionRange = 300f;
+	// private double currentHealth = 0;
 
 	// Nodes
 	private NavigationAgent2D _navAgent;
@@ -31,14 +32,16 @@ public partial class AiMob : CharacterBody2D
 	private Sprite2D _attackSprite;
 	private Sprite2D _hurtSprite;
 	private Sprite2D _deadSprite;
-
+	public int damage { get; private set; } = 20;
 	// Internal Variables
-	private int _currentHealth;
+	private double _currentHealth = 5;
 	private bool _playerVisible;
 	private bool _attackCooldown;
+	public static AiMob instance;
 
 	public override void _Ready()
 	{
+		instance = this;
 		_idleSprite = GetNode<Sprite2D>("IdleSprite");
 	 	_walkSprite = GetNode<Sprite2D>("WalkSprite");
 	 	_attackSprite = GetNode<Sprite2D>("AttackSprite");
@@ -47,7 +50,7 @@ public partial class AiMob : CharacterBody2D
 	
 	 	HideAllSprites();
 	 	_idleSprite.Visible = true;
-		_currentHealth = MaxHealth;
+		// _currentHealth = MaxHealth;
 		_navAgent = GetNode<NavigationAgent2D>("NavAgent2D");
 		_animPlayer = GetNode<AnimationPlayer>("AnimationPlayer");
 		
@@ -60,7 +63,7 @@ public partial class AiMob : CharacterBody2D
 		hitbox.BodyExited += OnHitboxBodyExited;
 		
 		var hurtbox = GetNode<Area2D>("Hurtbox");
-		hurtbox.AreaEntered += OnHurtboxAreaEntered;
+		// hurtbox.AreaEntered += OnHurtboxAreaEntered;
 
 		if (_player == null){
 			GD.Print("Player not found");
@@ -96,10 +99,17 @@ public partial class AiMob : CharacterBody2D
 
 	public override void _PhysicsProcess(double delta)
 	{
+		var healthBar = GetNode<ProgressBar>("healthBar");
 		if (IsDead()) return;
 
 		UpdateState();
 		UpdateAnimation();
+
+		if (_currentHealth < MaxHealth)
+            {
+                _currentHealth += 0.2;
+                healthBar.Value = _currentHealth;
+            }
 
 		switch (_currentState)
 		{
@@ -112,6 +122,7 @@ public partial class AiMob : CharacterBody2D
 				HandleAttack();
 				break;
 		}
+		
 	}
 
 	private void UpdateState()
@@ -203,7 +214,7 @@ public partial class AiMob : CharacterBody2D
 	{
 		if (IsDead()) return;
 
-		_currentHealth -= damage;
+		_currentHealth -= Player.instance.damage;
 
 		if (_currentHealth <= 0)
 		{
@@ -239,7 +250,6 @@ public partial class AiMob : CharacterBody2D
 			_currentState = State.Chase;
 		}
 	}
-
 	private void OnHitboxBodyExited(Node2D body)
 	{
 		GD.Print("Hitbox Body Exited: " + body.Name);
@@ -254,13 +264,24 @@ public partial class AiMob : CharacterBody2D
 	{
 		QueueFree();
 	}
-	private void OnHurtboxAreaEntered(Area2D area)
+	// private void OnHurtboxAreaEntered(Area2D area, Area2D col)
+	// {
+	// 	var healthBar = GetNode<ProgressBar>("healthBar");
+
+	// 	if (area.IsInGroup("player_attack"))
+	// 	{
+	// 		// int damage = (int)area.Get("damage"); 
+	// 		TakeDamage(damage); 
+			
+	// 		healthBar.Value = _currentHealth;
+	// 	}
+	// }
+	private void OnHurtboxAreaEntered(Area2D col)
 	{
-		if (area.IsInGroup("player_attack"))
-		{
-			int damage = (int)area.Get("damage"); 
-			TakeDamage(damage); 
-		}
+		var healthBar = GetNode<ProgressBar>("healthBar");
+		TakeDamage(damage); 
+		healthBar.Value = _currentHealth;
+		
 	}
 	private void HideAllSprites()
 	{

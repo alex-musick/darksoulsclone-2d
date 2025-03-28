@@ -5,10 +5,14 @@ using System.Dynamic;
 
 public partial class Player : CharacterBody2D
 {
+    // make healing input
+    // fix hitbox, attack, and mob hitbox
+    // make sure death stays dead
+    // how to deect specific area node
     [Export]
     public int Speed { get; set; } = 75; // How fast the player will move (pixels/sec).
     public int dodgeSpeed { get; set; } = 125;
-    public int damage { get; private set; } = 1;
+    public int damage { get; private set; } = 50;
     private double maxHealth = 100;
     private double currentHealth = 5;
     private double maxStamina = 100;
@@ -49,27 +53,34 @@ public partial class Player : CharacterBody2D
     }
     private void _on_hit_box_area_entered(Area2D col)
     {
-        GD.Print("damage taken");
-        currentHealth--;
-        if (facingDirection == FacingDirection.up)
+        if (col.Name == "attackBox")
         {
-            hitTaken("SprPlayerUpHit");
-            hideAndShowAni("SprPlayerUpHit");
-        }
-        else if (facingDirection == FacingDirection.down)
-        {
-            hitTaken("SprPlayerDownHit");
-            hideAndShowAni("SprPlayerDownHit");
-        }
-        else if (facingDirection == FacingDirection.left)
-        {
-            hitTaken("SprPlayerLeftHit");
-            hideAndShowAni("SprPlayerLeftHit");
-        }
-        else if (facingDirection == FacingDirection.right)
-        {
-            hitTaken("SprPlayerRightHit");
-            hideAndShowAni("SprPlayerRightHit");
+            currentHealth -= AiMob.instance.damage;
+            if (currentHealth <= 0)
+            {
+                var deathAni = GetNode<AnimationPlayer>("deathAnimation");
+                deathAni.Play("deathAnimation");
+            }
+            else if (facingDirection == FacingDirection.up)
+            {
+                hitTaken("SprPlayerUpHit");
+                hideAndShowAni("SprPlayerUpHit");
+            }
+            else if (facingDirection == FacingDirection.down)
+            {
+                hitTaken("SprPlayerDownHit");
+                hideAndShowAni("SprPlayerDownHit");
+            }
+            else if (facingDirection == FacingDirection.left)
+            {
+                hitTaken("SprPlayerLeftHit");
+                hideAndShowAni("SprPlayerLeftHit");
+            }
+            else if (facingDirection == FacingDirection.right)
+            {
+                hitTaken("SprPlayerRightHit");
+                hideAndShowAni("SprPlayerRightHit");
+            }
         }
     }
     public void hideSprite(string spriteName)
@@ -131,8 +142,9 @@ public partial class Player : CharacterBody2D
     {
         if (currentHealth <= 0)
         {
-            var deathAni = GetNode<AnimationPlayer>("deathAnimation");
-            deathAni.Play("deathAnimation");
+            // var deathAni = GetNode<AnimationPlayer>("deathAnimation");
+            // deathAni.Play("deathAnimation");
+            return;
         }
         else
         {
@@ -140,7 +152,7 @@ public partial class Player : CharacterBody2D
             Vector2 velocity = Vector2.Zero;
             Vector2 direction = Input.GetVector("move_left", "move_right", "move_up", "move_down");
             var healthBar = GetNode<ProgressBar>("healthBar");
-            var staminaBar = GetNode<ProgressBar>("staminaBar");            
+            var staminaBar = GetNode<ProgressBar>("staminaBar");
             var aniPlayerMoving = GetNode<AnimationPlayer>("walkAnimation");
             if (Input.IsActionJustPressed("Attack"))
             {
@@ -148,31 +160,31 @@ public partial class Player : CharacterBody2D
                 {
                     GD.Print("Cant Attack");
                 }
-                else 
+                else
                 {
-                isAttacking = true;
-                if (facingDirection == FacingDirection.up)
-                {
-                    attack("attackUp");
-                    hideAndShowAni("SprPlayerUpAttack");
-                }
-                else if (facingDirection == FacingDirection.down)
-                {
-                    attack("attackDown");
-                    hideAndShowAni("SprPlayerDownAttack");
-                }
-                else if (facingDirection == FacingDirection.left)
-                {
-                    attack("attackLeft");
-                    hideAndShowAni("SprPlayerLeftAttack");
-                }
-                else if (facingDirection == FacingDirection.right)
-                {
-                    attack("attackRight");
-                    hideAndShowAni("SprPlayerRightAttack");
-                }
-                currentStamina -= 25;
-                staminaBar.Value = currentStamina;
+                    isAttacking = true;
+                    if (facingDirection == FacingDirection.up)
+                    {
+                        attack("attackUp");
+                        hideAndShowAni("SprPlayerUpAttack");
+                    }
+                    else if (facingDirection == FacingDirection.down)
+                    {
+                        attack("attackDown");
+                        hideAndShowAni("SprPlayerDownAttack");
+                    }
+                    else if (facingDirection == FacingDirection.left)
+                    {
+                        attack("attackLeft");
+                        hideAndShowAni("SprPlayerLeftAttack");
+                    }
+                    else if (facingDirection == FacingDirection.right)
+                    {
+                        attack("attackRight");
+                        hideAndShowAni("SprPlayerRightAttack");
+                    }
+                    currentStamina -= 25;
+                    staminaBar.Value = currentStamina;
                 }
             }
 
