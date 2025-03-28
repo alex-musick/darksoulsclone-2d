@@ -5,13 +5,10 @@ using System.Dynamic;
 
 public partial class Player : CharacterBody2D
 {
-    // make healing input
-    // fix hitbox, attack, and mob hitbox
     // make sure death stays dead
-    // how to deect specific area node
     [Export]
     public int Speed { get; set; } = 75; // How fast the player will move (pixels/sec).
-    public int dodgeSpeed { get; set; } = 125;
+    public int dodgeSpeed { get; set; } = 200;
     public int damage { get; private set; } = 50;
     private double maxHealth = 100;
     private double currentHealth = 5;
@@ -53,7 +50,13 @@ public partial class Player : CharacterBody2D
     }
     private void _on_hit_box_area_entered(Area2D col)
     {
-        if (col.Name == "attackBox")
+        if (currentHealth <= 0)
+        {
+            var deathAni = GetNode<AnimationPlayer>("deathAnimation");
+            deathAni.Play("deathAnimation");
+            QueueFree();
+        }
+        else if (col.Name == "attackBox")
         {
             currentHealth -= AiMob.instance.damage;
             if (currentHealth <= 0)
@@ -310,11 +313,13 @@ public partial class Player : CharacterBody2D
             }
             Velocity = velocity;
             MoveAndSlide();
-            if (currentHealth < maxHealth)
-            {
-                currentHealth += 0.2;
-                healthBar.Value = currentHealth;
-            }
+            if (Input.IsActionJustPressed("Heal"))
+
+                if (currentHealth < maxHealth)
+                {
+                    currentHealth += 25;
+                    healthBar.Value = currentHealth;
+                }
             if (currentStamina < maxStamina)
             {
                 currentStamina += 0.2;
