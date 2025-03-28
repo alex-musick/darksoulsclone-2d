@@ -108,10 +108,10 @@ public partial class AiMob : CharacterBody2D
 		UpdateAnimation();
 
 		if (_currentHealth < MaxHealth)
-            {
-                _currentHealth += 0.2;
-                healthBar.Value = _currentHealth;
-            }
+			{
+				_currentHealth += 0.2;
+				healthBar.Value = _currentHealth;
+			}
 
 		switch (_currentState)
 		{
