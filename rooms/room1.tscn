@@ -2,7 +2,7 @@
 
 [ext_resource type="TileSet" uid="uid://d4joggdbfkxel" path="res://art/basic_world_tiles.tres" id="1_lwhkg"]
 [ext_resource type="PackedScene" uid="uid://4g4gqc3kkn85" path="res://player.tscn" id="2_n2rm1"]
-[ext_resource type="PackedScene" uid="uid://bt5uohm54j7jg" path="res://ai_mob.tscn" id="3_yv82f"]
+[ext_resource type="PackedScene" uid="uid://cudey4y6nhnol" path="res://rooms/MobSpawner.tscn" id="4_w4cg4"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_lwhkg"]
 size = Vector2(65, 74)
@@ -185,9 +185,6 @@ shape = SubResource("CircleShape2D_n2rm1")
 position = Vector2(855, 100)
 shape = SubResource("CircleShape2D_n2rm1")
 
-[node name="AiMob" parent="." instance=ExtResource("3_yv82f")]
-position = Vector2(812, 532)
-
 [node name="BorderCollision" type="StaticBody2D" parent="."]
 
 [node name="OuterWalls" type="CollisionPolygon2D" parent="BorderCollision"]
@@ -318,10 +315,6 @@ shape = SubResource("CircleShape2D_6436r")
 position = Vector2(1800, -9)
 shape = SubResource("CircleShape2D_6436r")
 
-[node name="CollisionShape2D25" type="CollisionShape2D" parent="ObjectCollision"]
-position = Vector2(1000, -201)
-shape = SubResource("CircleShape2D_6436r")
-
 [node name="CollisionShape2D31" type="CollisionShape2D" parent="ObjectCollision"]
 position = Vector2(1448, -187)
 shape = SubResource("RectangleShape2D_dphml")
@@ -337,3 +330,6 @@ shape = SubResource("RectangleShape2D_p1u42")
 [node name="CollisionShape2D34" type="CollisionShape2D" parent="ObjectCollision"]
 position = Vector2(1480, -201)
 shape = SubResource("RectangleShape2D_p1u42")
+
+[node name="MobSpawner" parent="." instance=ExtResource("4_w4cg4")]
+position = Vector2(851, 157)
