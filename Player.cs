@@ -11,9 +11,10 @@ public partial class Player : CharacterBody2D
     public int dodgeSpeed { get; set; } = 200;
     public int damage { get; private set; } = 50;
     private double maxHealth = 100;
-    private double currentHealth = 5;
+    private double currentHealth = 100;
     private double maxStamina = 100;
     private double currentStamina = 5;
+    [Export] private bool takingDamage = false;
     public enum FacingDirection
     {
         up, down, left, right
@@ -23,6 +24,7 @@ public partial class Player : CharacterBody2D
     [Export] public bool isDodging = false;
     public static Player instance;
     // Variant dodgingDirection;
+
 
     public Vector2 ScreenSize;
 
@@ -49,40 +51,46 @@ public partial class Player : CharacterBody2D
         var aniPlayer = GetNode<AnimationPlayer>("hitAnimation");
         aniPlayer.Play(hitName);
     }
+    public void _on_death_animation_animation_finished(string aniName)
+    {
+        if (aniName == "deathAni")
+        {
+            QueueFree();
+        }
+    }
     private void _on_hit_box_area_entered(Area2D col)
     {
+        // takingDamage = true;
         if (currentHealth <= 0)
         {
             var deathAni = GetNode<AnimationPlayer>("deathAnimation");
             deathAni.Play("deathAnimation");
-            QueueFree();
+            _on_death_animation_animation_finished("deathAni");
         }
         else if (col.Name == "attackBox")
         {
-            currentHealth -= AiMob.instance.damage;
-            if (currentHealth <= 0)
+            takingDamage = true;
+            currentHealth = currentHealth - AiMob.instance.damage;
+            var healthBar = GetNode<ProgressBar>("healthBar");
+            healthBar.Value = currentHealth;
+            if (facingDirection == FacingDirection.up)
             {
-                var deathAni = GetNode<AnimationPlayer>("deathAnimation");
-                deathAni.Play("deathAnimation");
-            }
-            else if (facingDirection == FacingDirection.up)
-            {
-                hitTaken("SprPlayerUpHit");
+                hitTaken("hitUp");
                 hideAndShowAni("SprPlayerUpHit");
             }
             else if (facingDirection == FacingDirection.down)
             {
-                hitTaken("SprPlayerDownHit");
+                hitTaken("hitDown");
                 hideAndShowAni("SprPlayerDownHit");
             }
             else if (facingDirection == FacingDirection.left)
             {
-                hitTaken("SprPlayerLeftHit");
+                hitTaken("hitLeft");
                 hideAndShowAni("SprPlayerLeftHit");
             }
             else if (facingDirection == FacingDirection.right)
             {
-                hitTaken("SprPlayerRightHit");
+                hitTaken("hitRight");
                 hideAndShowAni("SprPlayerRightHit");
             }
         }
@@ -144,13 +152,12 @@ public partial class Player : CharacterBody2D
     }
     public void physicsPlayer(double delta)
     {
-        if (currentHealth <= 0)
-        {
-            // var deathAni = GetNode<AnimationPlayer>("deathAnimation");
-            // deathAni.Play("deathAnimation");
-            return;
-        }
-        else
+        // if (currentHealth <= 0)
+        // {
+        //     var deathAni = GetNode<AnimationPlayer>("deathAnimation");
+        //     deathAni.Play("deathAnimation");
+        // }
+        if (takingDamage == false)
         {
             // GD.Print(isDodging);
             Vector2 velocity = Vector2.Zero;
@@ -222,7 +229,6 @@ public partial class Player : CharacterBody2D
                     {
                         aniPlayerMoving.Play("walkLeft");
                         hideAndShowAni("SprPlayerLeftWalk");
-                        // velocity = direction.Normalized() * Speed;
                     }
 
                 }
@@ -323,6 +329,10 @@ public partial class Player : CharacterBody2D
                 {
                     currentHealth += 25;
                     healthBar.Value = currentHealth;
+                    if (currentHealth > 100)
+                    {
+                        currentHealth = 100;
+                    }
                 }
             if (currentStamina < maxStamina)
             {

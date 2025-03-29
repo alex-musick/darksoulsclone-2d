@@ -34,7 +34,7 @@ public partial class AiMob : CharacterBody2D
 	private Sprite2D _deadSprite;
 	public int damage { get; private set; } = 20;
 	// Internal Variables
-	private double _currentHealth = 5;
+	private double _currentHealth = 20;
 	private bool _playerVisible;
 	private bool _attackCooldown;
 	public static AiMob instance;
