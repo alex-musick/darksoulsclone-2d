@@ -3,7 +3,17 @@ using System;
 
 public partial class AiMob : CharacterBody2D
 {
-	// State Machine
+
+	[Signal] public delegate void SpawnedEventHandler();
+	[Signal] public delegate void DestroyedEventHandler();
+    // State Machine
+
+    public override void _ExitTree()
+    {
+		EmitSignal(SignalName.Destroyed);
+        base._ExitTree();
+
+    }
 	private enum State
 	{
 		Idle,
@@ -42,6 +52,7 @@ public partial class AiMob : CharacterBody2D
 
 	public override void _Ready()
 	{
+		EmitSignal(SignalName.Spawned);
 		instance = this;
 		_idleSprite = GetNode<Sprite2D>("IdleSprite");
 	 	_walkSprite = GetNode<Sprite2D>("WalkSprite");
