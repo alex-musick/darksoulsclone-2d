@@ -257,7 +257,6 @@ bg_color = Color(0.172833, 0.172833, 0.172833, 1)
 bg_color = Color(0.781833, 0.16796, 0.0786523, 1)
 
 [node name="AiMob" type="CharacterBody2D"]
-position = Vector2(87, 66)
 script = ExtResource("1_pqule")
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
