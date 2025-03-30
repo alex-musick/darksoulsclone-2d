@@ -6,17 +6,17 @@ public partial class AiMob : CharacterBody2D
 
 	[Signal] public delegate void SpawnedEventHandler();
 	[Signal] public delegate void DestroyedEventHandler();
-    // State Machine
 
     public override void _ExitTree()
     {
 		EmitSignal(SignalName.Destroyed);
         base._ExitTree();
-
     }
+    // State Machine
 	private enum State
 	{
 		Idle,
+		Patrol,
 		Chase,
 		Attack,
 		Hurt,
@@ -29,7 +29,13 @@ public partial class AiMob : CharacterBody2D
 	[Export] public float MoveSpeed = 150f;
 	[Export] public float AttackRange = 50f;
 	[Export] public float VisionRange = 300f;
-	// private double currentHealth = 0;
+	[Export] public float WaitTime = 2.0f;
+
+	// Patrol variables
+	private Vector2 _patrolStart;
+	private Vector2 _patrolEnd;
+	private Vector2 _patrolTarget;
+	private bool _waiting = false;
 
 	// Nodes
 	private NavigationAgent2D _navAgent;
@@ -44,7 +50,7 @@ public partial class AiMob : CharacterBody2D
 	private Sprite2D _deadSprite;
 	public int damage { get; private set; } = 20;
 	// Internal Variables
-	private double _currentHealth = 20;
+	private double _currentHealth = 5;
 	private bool _playerVisible;
 	private bool _attackCooldown;
 	public static AiMob instance;
@@ -55,19 +61,21 @@ public partial class AiMob : CharacterBody2D
 		EmitSignal(SignalName.Spawned);
 		instance = this;
 		_idleSprite = GetNode<Sprite2D>("IdleSprite");
-	 	_walkSprite = GetNode<Sprite2D>("WalkSprite");
-	 	_attackSprite = GetNode<Sprite2D>("AttackSprite");
-	 	_hurtSprite = GetNode<Sprite2D>("HurtSprite");
-	 	_deadSprite = GetNode<Sprite2D>("DeathSprite");
+		_walkSprite = GetNode<Sprite2D>("WalkSprite");
+		_attackSprite = GetNode<Sprite2D>("AttackSprite");
+		_hurtSprite = GetNode<Sprite2D>("HurtSprite");
+		_deadSprite = GetNode<Sprite2D>("DeathSprite");
+		
+		_patrolStart = GlobalPosition;
+		_patrolEnd = _patrolStart + new Vector2(200, 0);
+		_patrolTarget = _patrolEnd;
 	
-	 	HideAllSprites();
-	 	_idleSprite.Visible = true;
-		// _currentHealth = MaxHealth;
+		HideAllSprites();
+		_idleSprite.Visible = true;
+		
 		_navAgent = GetNode<NavigationAgent2D>("NavAgent2D");
 		_animPlayer = GetNode<AnimationPlayer>("AnimationPlayer");
 		
-		
-
 		_player = GetNode<Node2D>("/root/TestRoom/Player");
 		_attackBox = GetNode<Area2D>("attackBox");
 		
@@ -75,15 +83,13 @@ public partial class AiMob : CharacterBody2D
 		detectionArea.BodyEntered += OnDetectionAreaBodyEntered;
 		detectionArea.BodyExited += OnDetectionAreaBodyExited;
 		
-		var hurtbox = GetNode<Area2D>("Hurtbox");
-		// hurtbox.AreaEntered += OnHurtboxAreaEntered;
-
-		if (_player == null){
-			GD.Print("Player not found");
-		}
-
 		SetupNavigation();
 		StartPathUpdateTimer();
+
+		if (!_playerVisible)
+		{
+			_currentState = State.Patrol;
+		}
 	}
 
 	private void SetupNavigation()
@@ -103,25 +109,39 @@ public partial class AiMob : CharacterBody2D
 
 	private void UpdatePath()
 	{
-		if (_player != null && !IsDead())
+		if (IsDead()) return;
+
+		if (_playerVisible && _player != null)
 		{
-			GD.Print("Updating Path to Player: " + _player.GlobalPosition);
 			_navAgent.TargetPosition = _player.GlobalPosition;
+		}
+		else if (_currentState == State.Patrol)
+		{
+			_navAgent.TargetPosition = _patrolTarget;
 		}
 	}
 
 	public override void _PhysicsProcess(double delta)
 	{
-		var healthBar = GetNode<ProgressBar>("healthBar");
 		if (IsDead()) return;
+
+		var healthBar = GetNode<ProgressBar>("healthBar");
+		if (_currentHealth < MaxHealth)
+		{ 
+			_currentHealth += 0.2; 
+			healthBar.Value = _currentHealth;
+		}
 
 		UpdateState();
 		UpdateAnimation();
-
 		
-
 		switch (_currentState)
 		{
+			case State.Patrol:
+				HandlePatrol();
+				HandleMovement();
+				break;
+
 			case State.Chase:
 				HandleMovement();
 				CheckAttackRange();
@@ -131,7 +151,6 @@ public partial class AiMob : CharacterBody2D
 				HandleAttack();
 				break;
 		}
-		
 	}
 
 	private void UpdateState()
@@ -145,9 +164,29 @@ public partial class AiMob : CharacterBody2D
 			else
 				_currentState = State.Chase;
 		}
-		else
+		else if (_currentState != State.Patrol && !_waiting)
+		{
+			_currentState = State.Patrol;
+		}
+	}
+
+	private async void HandlePatrol()
+	{
+		if (_waiting) return;
+
+		// Check if we've reached the current patrol target
+		if (GlobalPosition.DistanceTo(_patrolTarget) < 5f)
 		{
 			_currentState = State.Idle;
+			_waiting = true;
+			
+			await ToSignal(GetTree().CreateTimer(WaitTime), "timeout");
+			
+			// Switch to the other patrol point
+			_patrolTarget = (_patrolTarget == _patrolStart) ? _patrolEnd : _patrolStart;
+			_navAgent.TargetPosition = _patrolTarget;
+			_waiting = false;
+			_currentState = State.Patrol;
 		}
 	}
 
@@ -155,25 +194,22 @@ public partial class AiMob : CharacterBody2D
 	{
 		if (_navAgent.IsNavigationFinished()) 
 		{
-			GD.Print("Navigation Finished - No movement");
 			return;
 		}
 
 		Vector2 nextPosition = _navAgent.GetNextPathPosition();
-		Vector2 direction = Position.DirectionTo(nextPosition);
+		Vector2 direction = (nextPosition - GlobalPosition).Normalized();
 
-		if (direction.Length() > 0)
-		{
-			GD.Print("Moving towards: " + nextPosition);
-			Velocity = direction * MoveSpeed;
-			MoveAndSlide();
-		}
+		Velocity = direction * MoveSpeed;
+		MoveAndSlide();
 	}
 
 	private void CheckAttackRange()
 	{
-		if (Position.DistanceTo(_player.GlobalPosition) <= AttackRange)
+		if (_player != null && Position.DistanceTo(_player.GlobalPosition) <= AttackRange)
+		{
 			_currentState = State.Attack;
+		}
 	}
 
 	private async void HandleAttack()
@@ -183,11 +219,18 @@ public partial class AiMob : CharacterBody2D
 		_attackCooldown = true;
 		_animPlayer.Play("attack");
 		_attackBox.Monitoring = true;
+		
 		await ToSignal(_animPlayer, "animation_finished");
+		
 		_attackBox.Monitoring = false;
 		_attackCooldown = false;
+		
+		// Return to chase if player is still visible but out of attack range
+		if (_playerVisible && Position.DistanceTo(_player.GlobalPosition) > AttackRange)
+		{
+			_currentState = State.Chase;
+		}
 	}
-
 	private void  UpdateAnimation()
 	{
 		HideAllSprites();
@@ -199,6 +242,7 @@ public partial class AiMob : CharacterBody2D
 				_animPlayer.Play("idle");
 				break;
 
+			case State.Patrol:
 			case State.Chase:
 				_walkSprite.Visible = true;
 				_animPlayer.Play("walk");
