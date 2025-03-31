@@ -3,7 +3,21 @@ using System;
 
 public partial class AiMob : CharacterBody2D
 {
-	// State Machine
+
+	[Signal] public delegate void SpawnedEventHandler();
+	[Signal] public delegate void DestroyedEventHandler();
+    // State Machine
+
+    public override void _ExitTree()
+    {
+		EmitSignal(SignalName.Destroyed);
+        base._ExitTree();
+    }
+
+	public override void _EnterTree()
+	{
+		EmitSignal(SignalName.Spawned);
+	}
 	private enum State
 	{
 		Idle,
