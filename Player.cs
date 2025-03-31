@@ -14,6 +14,7 @@ public partial class Player : CharacterBody2D
     private double currentHealth = 100;
     private double maxStamina = 100;
     private double currentStamina = 5;
+    private bool isDead = false;
     [Export] private bool takingDamage = false;
     public enum FacingDirection
     {
@@ -51,23 +52,19 @@ public partial class Player : CharacterBody2D
         var aniPlayer = GetNode<AnimationPlayer>("hitAnimation");
         aniPlayer.Play(hitName);
     }
-    public void _on_death_animation_animation_finished(string aniName)
+    public void _on_death_animation_animation_finished()
     {
-        if (aniName == "deathAni")
-        {
-            QueueFree();
-        }
+        QueueFree();
     }
     private void _on_hit_box_area_entered(Area2D col)
     {
-        // takingDamage = true;
         if (currentHealth <= 0)
         {
             var deathAni = GetNode<AnimationPlayer>("deathAnimation");
             deathAni.Play("deathAnimation");
-            _on_death_animation_animation_finished("deathAni");
+            
         }
-        else if (col.Name == "attackBox")
+        if (col.Name == "attackBox")
         {
             takingDamage = true;
             currentHealth = currentHealth - AiMob.instance.damage;
@@ -137,29 +134,44 @@ public partial class Player : CharacterBody2D
             }
         }
     }
-    // delta is time passed on screen
     public void dodgeAttack(string dodgeName)
     {
         var aniPlayer = GetNode<AnimationPlayer>("dodgeAnimation");
 
-        aniPlayer.Play(dodgeName);
+        if (aniPlayer != null)
+        {
+            aniPlayer.Play(dodgeName);
+        }
+        else
+        {
+            GD.PrintErr($"Node '{dodgeName}' not found!");
+        }
     }
     public void idlePlayer(string idleName)
     {
         var aniPlayer = GetNode<AnimationPlayer>("idleAnimation");
 
-        aniPlayer.Play(idleName);
+        if (aniPlayer != null)
+        {
+            aniPlayer.Play(idleName);
+        }
+        else
+        {
+            GD.PrintErr($"Node '{idleName}' not found!");
+        }
     }
     public void physicsPlayer(double delta)
     {
         // if (currentHealth <= 0)
         // {
+        //     isDead = true;
         //     var deathAni = GetNode<AnimationPlayer>("deathAnimation");
-        //     deathAni.Play("deathAnimation");
+        //     deathAni.Play("deathAni");
+
         // }
         if (takingDamage == false)
         {
-            // GD.Print(isDodging);
+            
             Vector2 velocity = Vector2.Zero;
             Vector2 direction = Input.GetVector("move_left", "move_right", "move_up", "move_down");
             var healthBar = GetNode<ProgressBar>("healthBar");
