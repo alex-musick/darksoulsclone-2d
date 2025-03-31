@@ -3,7 +3,7 @@
 [ext_resource type="TileSet" uid="uid://d4joggdbfkxel" path="res://art/basic_world_tiles.tres" id="1_lwhkg"]
 [ext_resource type="Script" uid="uid://djbk2bdiqls63" path="res://rooms/Room1.cs" id="1_w4cg4"]
 [ext_resource type="PackedScene" uid="uid://4g4gqc3kkn85" path="res://player.tscn" id="2_n2rm1"]
-[ext_resource type="PackedScene" uid="uid://cudey4y6nhnol" path="res://rooms/MobSpawner.tscn" id="4_w4cg4"]
+[ext_resource type="PackedScene" path="res://rooms/MobSpawner.tscn" id="4_w4cg4"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_lwhkg"]
 size = Vector2(65, 74)

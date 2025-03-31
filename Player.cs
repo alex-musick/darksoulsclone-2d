@@ -2,6 +2,7 @@ using Godot;
 using System;
 using System.Collections.Generic;
 using System.Dynamic;
+using System.Runtime.Serialization;
 
 public partial class Player : CharacterBody2D
 {
@@ -52,18 +53,21 @@ public partial class Player : CharacterBody2D
         var aniPlayer = GetNode<AnimationPlayer>("hitAnimation");
         aniPlayer.Play(hitName);
     }
-    public void _on_death_animation_animation_finished()
+    public void _on_death_animation_animation_finished(string aniName)
     {
-        QueueFree();
+        if (aniName == "deathAni")
+        {
+            QueueFree();
+        }
     }
     private void _on_hit_box_area_entered(Area2D col)
     {
-        if (currentHealth <= 0)
-        {
-            var deathAni = GetNode<AnimationPlayer>("deathAnimation");
-            deathAni.Play("deathAnimation");
-            
-        }
+        // if (currentHealth <= 0)
+        // {
+        //     var deathAni = GetNode<AnimationPlayer>("deathAnimation");
+        //     deathAni.Play("deathAnimation");
+        //     hideAndShowAni("SprPlayerDeath");
+        // }
         if (col.Name == "attackBox")
         {
             takingDamage = true;
@@ -162,14 +166,15 @@ public partial class Player : CharacterBody2D
     }
     public void physicsPlayer(double delta)
     {
-        // if (currentHealth <= 0)
-        // {
-        //     isDead = true;
-        //     var deathAni = GetNode<AnimationPlayer>("deathAnimation");
-        //     deathAni.Play("deathAni");
-
-        // }
-        if (takingDamage == false)
+        if (currentHealth <= 0)
+        {
+            isDead = true;
+            var deathAni = GetNode<AnimationPlayer>("deathAnimation");
+            deathAni.Play("deathAni");
+            hideAndShowAni("SprPlayerDeath");
+            
+        }
+        if (isDead == false && takingDamage == false)
         {
             
             Vector2 velocity = Vector2.Zero;
