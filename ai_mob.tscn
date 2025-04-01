@@ -164,7 +164,6 @@ tracks/3/keys = {
 [sub_resource type="Animation" id="Animation_q26fp"]
 resource_name = "death"
 length = 0.8
-loop_mode = 1
 tracks/0/type = "value"
 tracks/0/imported = false
 tracks/0/enabled = true
@@ -264,6 +263,7 @@ libraries = {
 &"": SubResource("AnimationLibrary_dej36")
 }
 speed_scale = 0.6
+movie_quit_on_finish = true
 
 [node name="WalkSprite" type="Sprite2D" parent="."]
 visible = false
@@ -353,6 +353,7 @@ position = Vector2(-25, -7)
 shape = SubResource("RectangleShape2D_pqule")
 debug_color = Color(1, 0, 0, 0.419608)
 
+[connection signal="animation_finished" from="AnimationPlayer" to="." method="_on_animation_player_animation_finished"]
 [connection signal="area_entered" from="Hurtbox" to="." method="OnHurtboxAreaEntered"]
 [connection signal="area_entered" from="DetectionArea" to="." method="OnDetectionAreaBodyEntered"]
 [connection signal="area_exited" from="DetectionArea" to="." method="OnDetectionAreaBodyExited"]

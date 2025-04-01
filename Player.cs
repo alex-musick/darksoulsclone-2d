@@ -172,7 +172,6 @@ public partial class Player : CharacterBody2D
             var deathAni = GetNode<AnimationPlayer>("deathAnimation");
             deathAni.Play("deathAni");
             hideAndShowAni("SprPlayerDeath");
-            
         }
         if (isDead == false && takingDamage == false)
         {

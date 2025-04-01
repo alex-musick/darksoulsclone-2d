@@ -6,13 +6,13 @@ public partial class AiMob : CharacterBody2D
 
 	[Signal] public delegate void SpawnedEventHandler();
 	[Signal] public delegate void DestroyedEventHandler();
-    // State Machine
+	// State Machine
 
-    public override void _ExitTree()
-    {
+	public override void _ExitTree()
+	{
 		EmitSignal(SignalName.Destroyed);
-        base._ExitTree();
-    }
+		base._ExitTree();
+	}
 
 	public override void _EnterTree()
 	{
@@ -39,7 +39,7 @@ public partial class AiMob : CharacterBody2D
 	private NavigationAgent2D _navAgent;
 	private AnimationPlayer _animPlayer;
 	private Node2D _player;
-	
+
 	//Sprites
 	private Sprite2D _idleSprite;
 	private Sprite2D _walkSprite;
@@ -48,7 +48,7 @@ public partial class AiMob : CharacterBody2D
 	private Sprite2D _deadSprite;
 	public int damage { get; private set; } = 20;
 	// Internal Variables
-	private double _currentHealth = 20;
+	private double _currentHealth = 100;
 	private bool _playerVisible;
 	private bool _attackCooldown;
 	public static AiMob instance;
@@ -58,30 +58,31 @@ public partial class AiMob : CharacterBody2D
 	{
 		instance = this;
 		_idleSprite = GetNode<Sprite2D>("IdleSprite");
-	 	_walkSprite = GetNode<Sprite2D>("WalkSprite");
-	 	_attackSprite = GetNode<Sprite2D>("AttackSprite");
-	 	_hurtSprite = GetNode<Sprite2D>("HurtSprite");
-	 	_deadSprite = GetNode<Sprite2D>("DeathSprite");
-	
-	 	HideAllSprites();
-	 	_idleSprite.Visible = true;
+		_walkSprite = GetNode<Sprite2D>("WalkSprite");
+		_attackSprite = GetNode<Sprite2D>("AttackSprite");
+		_hurtSprite = GetNode<Sprite2D>("HurtSprite");
+		_deadSprite = GetNode<Sprite2D>("DeathSprite");
+
+		HideAllSprites();
+		_idleSprite.Visible = true;
 		// _currentHealth = MaxHealth;
 		_navAgent = GetNode<NavigationAgent2D>("NavAgent2D");
 		_animPlayer = GetNode<AnimationPlayer>("AnimationPlayer");
-		
-		
+
+
 
 		_player = GetNode<Node2D>("/root/TestRoom/Player");
 		_attackBox = GetNode<Area2D>("attackBox");
-		
+
 		var detectionArea = GetNode<Area2D>("DetectionArea");
 		detectionArea.BodyEntered += OnDetectionAreaBodyEntered;
 		detectionArea.BodyExited += OnDetectionAreaBodyExited;
-		
+
 		var hurtbox = GetNode<Area2D>("Hurtbox");
 		// hurtbox.AreaEntered += OnHurtboxAreaEntered;
 
-		if (_player == null){
+		if (_player == null)
+		{
 			GD.Print("Player not found");
 		}
 
@@ -116,12 +117,17 @@ public partial class AiMob : CharacterBody2D
 	public override void _PhysicsProcess(double delta)
 	{
 		var healthBar = GetNode<ProgressBar>("healthBar");
-		if (IsDead()) return;
+		if (IsDead())
+		{
+			
+				_animPlayer.Play("death");
+			
+		}
 
 		UpdateState();
 		UpdateAnimation();
 
-		
+
 
 		switch (_currentState)
 		{
@@ -134,9 +140,15 @@ public partial class AiMob : CharacterBody2D
 				HandleAttack();
 				break;
 		}
-		
-	}
 
+	}
+	private void _on_animation_player_animation_finished(string aniName)
+	{
+		if (aniName == "death")
+		{
+			QueueFree();
+		}
+	}
 	private void UpdateState()
 	{
 		if (_currentState == State.Hurt || _currentState == State.Dead) return;
@@ -156,7 +168,7 @@ public partial class AiMob : CharacterBody2D
 
 	private void HandleMovement()
 	{
-		if (_navAgent.IsNavigationFinished()) 
+		if (_navAgent.IsNavigationFinished())
 		{
 			GD.Print("Navigation Finished - No movement");
 			return;
@@ -191,10 +203,10 @@ public partial class AiMob : CharacterBody2D
 		_attackCooldown = false;
 	}
 
-	private void  UpdateAnimation()
+	private void UpdateAnimation()
 	{
 		HideAllSprites();
-		
+
 		switch (_currentState)
 		{
 			case State.Idle:
@@ -211,29 +223,33 @@ public partial class AiMob : CharacterBody2D
 				_attackSprite.Visible = true;
 				_animPlayer.Play("attack");
 				break;
-			
+
 			case State.Hurt:
 				_hurtSprite.Visible = true;
 				_animPlayer.Play("hurt");
 				break;
-			
+
 			case State.Dead:
 				_deadSprite.Visible = true;
-				_animPlayer.Play("dead");
+				// _animPlayer.Play("death");
 				break;
 		}
 	}
 
 	private void TakeDamage(int damage)
 	{
-		if (IsDead()) return;
+		// if (IsDead())
+		// {
+		// 	_animPlayer.Play("death");
+		// 	GetNode<CollisionShape2D>("CollisionShape2D").SetDeferred("disabled", true);
+		// 	GetNode<Area2D>("attackBox").Monitoring = false;
+		// }
 
 		_currentHealth -= Player.instance.damage;
 
 		if (_currentHealth <= 0)
 		{
 			SetState(State.Dead);
-			_animPlayer.Play("death");
 			GetNode<CollisionShape2D>("CollisionShape2D").SetDeferred("disabled", true);
 			GetNode<Area2D>("attackBox").Monitoring = false;
 		}
@@ -278,15 +294,15 @@ public partial class AiMob : CharacterBody2D
 	{
 		QueueFree();
 	}
-	
+
 	private void OnHurtboxAreaEntered(Area2D col)
 	{
 		var healthBar = GetNode<ProgressBar>("healthBar");
-		TakeDamage(damage); 
+		TakeDamage(damage);
 		healthBar.Value = _currentHealth;
-		
+
 	}
-	
+
 	private void HideAllSprites()
 	{
 		_idleSprite.Visible = false;
@@ -295,5 +311,5 @@ public partial class AiMob : CharacterBody2D
 		_hurtSprite.Visible = false;
 		_deadSprite.Visible = false;
 	}
-	
+
 }
