@@ -9,7 +9,7 @@ public partial class Player : CharacterBody2D
     // make sure death stays dead
     [Export]
     public int Speed { get; set; } = 75; // How fast the player will move (pixels/sec).
-    public int dodgeSpeed { get; set; } = 200;
+    public int dodgeSpeed { get; set; } = 125;
     public int damage { get; private set; } = 50;
     private double maxHealth = 100;
     private double currentHealth = 100;
